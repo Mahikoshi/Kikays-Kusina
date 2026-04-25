@@ -1,0 +1,182 @@
+/* --- SECTION 1: GLOBAL VARIABLES --- */
+:root {
+    --main-bg: #FBF8F1;
+    --panel-tan: #EFDBC9;
+    --input-bg: #E5BA91;
+    --text-dark: #3D2C24;
+    --btn-submit: #DD5C55;
+    --btn-create: #EAC864;
+    --error-bg: #ff4d4d;
+    --success-bg: #4caf50;
+    --transition: 0.3s ease;
+}
+
+/* --- SECTION 2: GLOBAL BASE STYLES --- */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* --- SECTION 3: LOGIN PAGE SCOPE --- */
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+
+    /* BACKGROUND PHOTO LOGIC */
+    /* Assumes food-bg.jpg is in your main folder. If in Pics, use url('Pics/food-bg.jpg') */
+    background-image: url('Pics/food.png'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+.login-page .main-container {
+    background-color: var(--main-bg);
+    width: 95%; 
+    max-width: 1200px; 
+    min-height: 600px; 
+    padding: 60px;
+    border-radius: 15px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4); 
+    display: flex;
+    flex-direction: column;
+    color: var(--text-dark);
+}
+
+.login-page .content-wrapper {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 40px;
+    flex-grow: 1;
+}
+
+.login-page .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+/* LOGO CENTERING */
+.login-page .logo-container {
+    width: 120px;
+    height: 120px;
+    margin-right: 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-page .main-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    display: block;
+}
+
+.login-page .header h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.login-page .intro-panel, 
+.login-page .login-panel,
+.login-page #forgotSection {
+    background-color: var(--panel-tan);
+    padding: 40px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-page .login-panel, .login-page #forgotSection { 
+    align-items: center; 
+    text-align: center; 
+}
+
+.login-page h3 {
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+}
+
+.login-page .input-group input {
+    width: 300px;
+    padding: 15px 25px;
+    margin-bottom: 12px;
+    background-color: var(--input-bg);
+    color: var(--text-dark);
+    border-radius: 50px;
+    border: none;
+    font-weight: bold;
+}
+
+.login-page .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 300px; 
+    margin: 0 auto 20px auto;
+    font-size: 0.85rem;
+}
+
+.login-page .btn-submit {
+    background-color: var(--btn-submit);
+    color: white;
+    padding: 14px;
+    border-radius: 50px;
+    border: none;
+    font-weight: 900;
+    cursor: pointer;
+    width: 200px;
+    margin: 10px auto;
+    text-transform: uppercase;
+}
+
+.login-page .create-user-link {
+    background-color: var(--btn-create);
+    color: var(--text-dark);
+    padding: 12px;
+    border-radius: 50px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    max-width: 200px;
+}
+
+.link-text { color: #4A90E2; text-decoration: none; font-weight: 600; }
+.hidden { display: none !important; }
+
+.error-box, .success-box {
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.error-box { background-color: var(--error-bg); }
+.success-box { background-color: var(--success-bg); }
+
+@media (max-width: 768px) {
+    .login-page .content-wrapper { grid-template-columns: 1fr; }
+    .login-page .main-container { padding: 30px; }
+}

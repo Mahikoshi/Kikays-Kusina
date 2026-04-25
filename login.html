@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kikay's Kusina | Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-page"> 
+    <div class="main-container">
+        <header class="header">
+            <div class="logo-container">
+                <img src="Pics/logo.jpg" alt="Logo" class="main-logo">
+            </div>
+            <h1>KIKAYS' KUSINA</h1>
+        </header>
+
+        <main class="content-wrapper">
+            <section class="intro-panel">
+                <h2>Our Story</h2>
+                <p>Welcome to <strong>Kikays' Kusina</strong>, where every dish is seasoned with love and tradition.</p>
+                <p>Explore our seasonal menu and experience the best of local Filipino cuisine, reimagined for the modern palate.</p>
+                <div class="intro-footer">
+                    <span>Authentic. Fresh. Local.</span>
+                </div>
+            </section>
+
+            <section class="login-panel">
+                <div id="loginSection">
+                    <h3>Welcome</h3>
+                    <div id="loginSuccess" class="success-box hidden"><span class="error-msg-text"></span></div>
+                    <div id="loginError" class="error-box hidden"><span class="error-msg-text"></span></div>
+                    <form id="loginForm">
+                        <div class="input-group">
+                            <input type="email" id="loginEmail" placeholder="Email" required>
+                            <input type="password" id="loginPassword" placeholder="Password" required>
+                        </div>
+                        <div class="form-options">
+                            <label><input type="checkbox"> Remember me</label>
+                            <a href="#" id="forgotPassLink" class="link-text">Forgot Password?</a>
+                        </div>
+                        <button type="submit" class="btn-submit">SUBMIT</button>
+                    </form>
+                    <button id="showCreateBtn" class="create-user-link">Create User</button>
+                </div>
+
+                <div id="createSection" class="hidden">
+                    <h3>CREATE USER</h3>
+                    <div id="registerError" class="error-box hidden"><span class="error-msg-text"></span></div>
+                    <form id="registerForm">
+                        <div class="input-group">
+                            <input type="text" id="regFullName" placeholder="Full Name" required>
+                            <input type="email" id="regEmail" placeholder="Email" required>
+                            <input type="password" id="regPassword" class="toggle-pass" placeholder="Password" required>
+                            <input type="password" id="regConfirmPassword" class="toggle-pass" placeholder="Confirm Password" required>
+                        </div>
+                        <div class="form-options">
+                            <label><input type="checkbox" id="toggleShowPass"> Show Password</label>
+                        </div>
+                        <button type="submit" class="btn-submit">REGISTER</button>
+                    </form>
+                    <button id="showLoginBtn" class="create-user-link">Back to Login</button>
+                </div>
+
+                <div id="forgotSection" class="hidden">
+                    <h3>Reset Password</h3>
+                    <div id="forgotError" class="error-box hidden"><span class="error-msg-text"></span></div>
+                    <form id="forgotForm">
+                        <div class="input-group">
+                            <input type="email" id="resetEmail" placeholder="Confirm Registered Email" required>
+                            <input type="password" id="newPassword" placeholder="New Password" required>
+                        </div>
+                        <button type="submit" class="btn-submit">UPDATE PASSWORD</button>
+                    </form>
+                    <button id="backFromForgotBtn" class="create-user-link">Back to Login</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
