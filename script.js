@@ -54,17 +54,30 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.toggle-pass').forEach(input => input.type = type);
         });
 
-        // REGISTER LOGIC
+        // Numeric Validation for Phone Number
+        const phoneInput = document.getElementById('regPhone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        }
+
+        // REGISTER LOGIC (Updated to include Phone)
         document.getElementById('registerForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('regEmail').value.trim().replace(/\./g, ',');
+            const phone = document.getElementById('regPhone').value.trim(); // Captured phone
             const pass = document.getElementById('regPassword').value;
 
             if (pass !== document.getElementById('regConfirmPassword').value) {
                 return showError(alerts.regErr, "Passwords do not match!");
             }
 
-            database.ref('users/' + email).set({ password: pass }, (error) => {
+            // Saving phone alongside password in Firebase
+            database.ref('users/' + email).set({ 
+                password: pass,
+                phone: phone 
+            }, (error) => {
                 if (error) showError(alerts.regErr, "Database Error!");
                 else {
                     showView('login');
