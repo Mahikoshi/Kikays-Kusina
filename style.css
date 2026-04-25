@@ -158,13 +158,14 @@ body {
 }
 
 .link-text { color: #4A90E2; text-decoration: none; font-weight: 600; }
-.hidden { display: none !important; }
+.hidden { display: none !important;
+ }
 
 .error-box, .success-box {
     padding: 10px;
     border-radius: 8px;
-    margin-bottom: 15px;
-    width: 300px;
+    margin: 0 auto 15px;
+    width: min(300px, 100%);
     display: flex;
     justify-content: center;
     align-items: center;
