@@ -38,6 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const showError = (container, msg) => {
             container.querySelector('.error-msg-text').textContent = msg;
             container.classList.remove('hidden');
+            setTimeout(() => container.classList.add('hidden'), 3000);
+        };
+
+        const showSuccess = (container, msg) => {
+            container.querySelector('.error-msg-text').textContent = msg;
+            container.classList.remove('hidden');
+            setTimeout(() => container.classList.add('hidden'), 3000);
         };
 
         // Navigation Switchers
@@ -82,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (error) showError(alerts.regErr, "Database Error!");
                 else {
                     showView('login');
-                    showError(alerts.loginSuccess, "Account Created Successfully!");
+                    showSuccess(alerts.loginSuccess, "Account Created Successfully!");
                 }
             });
         });
@@ -112,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (snapshot.exists()) {
                     database.ref('users/' + email).update({ password: newPass });
                     showView('login');
-                    showError(alerts.loginSuccess, "Password Updated Successfully!");
+                    showSuccess(alerts.loginSuccess, "Password Updated Successfully!");
                 } else {
                     showError(alerts.forgotErr, "Email not found.");
                 }

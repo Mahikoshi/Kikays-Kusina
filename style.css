@@ -162,20 +162,30 @@ body {
  }
 
 .error-box, .success-box {
-    padding: 10px;
-    border-radius: 8px;
     margin: 0 auto 15px;
-    width: min(300px, 100%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
+    width: auto;
     font-weight: bold;
     font-size: 0.85rem;
+    text-align: center;
 }
 
-.error-box { background-color: var(--error-bg); }
-.success-box { background-color: var(--success-bg); }
+.error-box {
+    padding: 0;
+    border-radius: 0;
+    display: block;
+    color: var(--error-bg);
+    background-color: transparent;
+}
+
+.success-box {
+    padding: 0;
+    border-radius: 0;
+    width: auto;
+    display: block;
+    color: var(--success-bg);
+    background-color: transparent;
+    text-align: center;
+}
 
 @media (max-width: 768px) {
     .login-page .content-wrapper { grid-template-columns: 1fr; }
