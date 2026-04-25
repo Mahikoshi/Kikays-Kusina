@@ -1,10 +1,12 @@
 const firebaseConfig = {
   apiKey: "AIzaSyA-0U2CV0IYQb736UiuY_WoDTKPh7xDKpg",
   authDomain: "kikayskusina-6052d.firebaseapp.com",
+  databaseURL: "https://kikayskusina-6052d-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "kikayskusina-6052d",
   storageBucket: "kikayskusina-6052d.firebasestorage.app",
   messagingSenderId: "415228960392",
   appId: "1:415228960392:web:da844bf5070ec23772493d",
+  measurementId: "G-9Z5KZ8E7ZP"
 };
 
 firebase.initializeApp(firebaseConfig);
