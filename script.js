@@ -5,7 +5,6 @@ const firebaseConfig = {
   storageBucket: "kikayskusina-6052d.firebasestorage.app",
   messagingSenderId: "415228960392",
   appId: "1:415228960392:web:da844bf5070ec23772493d",
-  measurementId: "G-DGFJ8ZWWJE"
 };
 
 firebase.initializeApp(firebaseConfig);
