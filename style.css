@@ -18,6 +18,8 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
 }
 
+
+/* start of Login Page CSS */
 /* --- SECTION 3: LOGIN PAGE SCOPE --- */
 .login-page {
     display: flex;
@@ -157,11 +159,11 @@ body {
     max-width: 200px;
 }
 
-.link-text { color: #4A90E2; text-decoration: none; font-weight: 600; }
-.hidden { display: none !important;
+.login-page .link-text { color: #4A90E2; text-decoration: none; font-weight: 600; }
+.login-page .hidden { display: none !important;
  }
 
-.error-box, .success-box {
+.login-page .error-box, .login-page .success-box {
     margin: 0 auto 15px;
     width: auto;
     font-weight: bold;
@@ -169,7 +171,7 @@ body {
     text-align: center;
 }
 
-.error-box {
+.login-page .error-box {
     padding: 0;
     border-radius: 0;
     display: block;
@@ -177,7 +179,7 @@ body {
     background-color: transparent;
 }
 
-.success-box {
+.login-page .success-box {
     padding: 0;
     border-radius: 0;
     width: auto;
