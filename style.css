@@ -203,7 +203,7 @@ body {
     height: 100vh;
     width: 100%;
     background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), 
-                url('home.png');
+                url('porku.png');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -288,6 +288,210 @@ body {
     letter-spacing: -1px;
     line-height: 1;
 }
+
+/* test */
+.home-page .process-section {
+    padding: 80px 10%;
+    background-color: #ffffff;
+    color: #1a2b48; /* Deep blue/grey text */
+}
+
+.home-page .content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.home-page .process-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.home-page .process-header h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+/* --- Tabs --- */
+.home-page .tab-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 60px;
+}
+
+.home-page .tab-btn {
+    padding: 10px 25px;
+    border-radius: 30px;
+    border: none;
+    background: #f0f2f5;
+    color: #555;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.home-page .tab-btn.active {
+    background: #e2e2e2;
+    border: 1px solid #000;
+    color: #000;
+}
+
+/* --- Grid Layout --- */
+.home-page .process-grid {
+    display: flex;
+    align-items: flex-start;
+    gap: 50px;
+}
+
+.home-page .process-info {
+    flex: 1;
+}
+
+.home-page .process-info h3 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.home-page .process-info h4 {
+    font-size: 1.4rem;
+    margin-bottom: 25px;
+}
+
+.home-page .process-list {
+    list-style: none;
+}
+
+.home-page .process-list li {
+    margin-bottom: 20px;
+    position: relative;
+    padding-left: 30px;
+    line-height: 1.6;
+}
+
+/* Checkmark bullets */
+.home-page .process-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+/* --- Image & Blue Accent --- */
+.home-page .image-container {
+    flex: 1;
+    position: relative;
+}
+
+.home-page .image-container img {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+    position: relative;
+    z-index: 2;
+}
+
+.home-page .blue-accent {
+    position: absolute;
+    bottom: -15px;
+    left: -15px;
+    width: 60%;
+    height: 70%;
+    background-color: #1e60d5; /* The blue box in your image */
+    border-radius: 8px;
+    z-index: 1;
+}
+
+/* test */
+
+/* Container Styling */
+.home-page .about-us-section {
+    background-color: #fdfdc8; /* Pale yellow background */
+    padding: 60px 20px;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    width: 100%;       /* Background spans full width */
+    margin: 0;         /* No gaps on the outside */
+    padding: 60px 0;
+}
+
+.home-page .about-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+}
+
+/* Grid Layout */
+.home-page .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* Three equal columns */
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: stretch; /* Ensures card and images are same height */
+}
+
+/* Image Styling */
+.home-page .about-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Prevents image distortion */
+    display: block;
+}
+
+/* Center Card Styling */
+.home-page .about-card {
+    background-color: #ebeba3; /* Slightly darker yellow for the card */
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.home-page .card-subtitle {
+    font-size: 0.75rem;
+    color: #a36d6d; /* Muted reddish-brown */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+.home-page .card-brand {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #6d4c41; /* Brownish tone */
+    margin-bottom: 25px;
+}
+
+.home-page .card-description {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #1a1a1a;
+    max-width: 250px;
+    margin-bottom: 30px;
+}
+
+/* Menu Pill Button */
+.home-page .menu-btn {
+    background-color: #fdfdc8; /* Matches section background */
+    color: #000;
+    text-decoration: none;
+    padding: 12px 45px;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.home-page .menu-btn:hover {
+    transform: scale(1.05);
+}
+
+/* test */
+
 
 @media (max-width: 768px) {
     .login-page .content-wrapper { grid-template-columns: 1fr; }
