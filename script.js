@@ -1,5 +1,5 @@
 /* GROUP 3 - KIKAY'S KUSINA PROJECT
-    CORE SCRIPT: Firebase Initialization, Authentication, and Role-Based Routing
+    CORE SCRIPT: Firebase Initialization, Authentication, and Hardcoded Admin Routing
 */
 
 const firebaseConfig = {
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return showError(alerts.regErr, "Passwords do not match!");
             }
 
-            // Saving data to Firebase. Note: 'role' is NOT added here for regular users.
+            // Saving data to Firebase. Regular users do not get a 'role' field here.
             database.ref('users/' + email).set({ 
                 password: pass,
                 phone: phone 
@@ -108,20 +108,25 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // --- DATABASE LOGIC: LOGIN & ROLE DETECTION ---
+        // --- DATABASE LOGIC: LOGIN & HARDCODED ROLE DETECTION ---
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim().replace(/\./g, ',');
+            
+            // Get raw email for admin comparison and converted email for DB lookup
+            const rawEmail = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const emailForDB = rawEmail.replace(/\./g, ',');
             const pass = document.getElementById('loginPassword').value;
 
+            // List of authorized admin emails (Hardcoded for security and ease of use)
+            const adminEmails = ["admin@gmail.com", "kikay@email.com"];
+
             // Fetch user data from Firebase
-            database.ref('users/' + email).once('value').then((snapshot) => {
+            database.ref('users/' + emailForDB).once('value').then((snapshot) => {
                 if (snapshot.exists() && snapshot.val().password === pass) {
-                    const userData = snapshot.val();
                     
-                    // ROLE CHECK: If the 'role' field was manually added in Firebase console, 
-                    // redirect to Admin. Otherwise, send to Home.
-                    if (userData.role === 'admin') {
+                    // ROLE CHECK: If the email is in the admin list, go to Admin UI.
+                    // Otherwise, send to the regular Home page.
+                    if (adminEmails.includes(rawEmail)) {
                         sessionStorage.setItem('userRole', 'admin');
                         window.location.href = "adminUI.html";
                     } else {
