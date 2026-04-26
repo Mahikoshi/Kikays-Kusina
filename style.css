@@ -227,7 +227,7 @@ body {
     background-color: #fcf6bd; /* Pale yellow */
     padding: 12px 45px;
     border-radius: 50px;
-    justify-content: left;
+    justify-content: center;
     
     /* The "Floating" Shadow Effect */
     border: 2px solid rgba(255, 255, 255, 0.7); /* Subtle white edge highlight */
