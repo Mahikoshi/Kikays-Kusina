@@ -100,6 +100,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
 }
 
 .login-page .login-panel, .login-page #forgotSection { 
