@@ -2,9 +2,9 @@
 :root {
     --main-bg: #FBF8F1;
     --panel-tan: #EFDBC9;
-    --input-bg: #E5BA91;
+    --input-bg: #FFFFFF;
     --text-dark: #3D2C24;
-    --btn-submit: #DD5C55;
+    --btn-submit: #C57B5A;
     --btn-create: #EAC864;
     --error-bg: #ff4d4d;
     --success-bg: #4caf50;
@@ -121,8 +121,12 @@ body {
     background-color: var(--input-bg);
     color: var(--text-dark);
     border-radius: 50px;
-    border: none;
+    border: 1px solid rgba(61, 44, 36, 0.15);
     font-weight: bold;
+}
+
+.login-page .input-group input::placeholder {
+    color: rgba(61, 44, 36, 0.55);
 }
 
 .login-page .form-options {
