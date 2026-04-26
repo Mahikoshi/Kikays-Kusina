@@ -196,6 +196,99 @@ body {
 
 /* End of CSS for Login Page */
 
+/* Start of CSS for Home Page */
+
+/* --- Hero Section & Background --- */
+.home-page .hero {
+    height: 100vh;
+    width: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), 
+                url('home.png');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* --- Header & Floating Nav --- */
+.home-page .header-container {
+    position: absolute;
+    top: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.home-page .nav-bar {
+    background-color: #fcf6bd; /* Pale yellow */
+    padding: 12px 45px;
+    border-radius: 50px;
+    justify-content: left;
+    
+    /* The "Floating" Shadow Effect */
+    border: 2px solid rgba(255, 255, 255, 0.7); /* Subtle white edge highlight */
+    box-shadow: 
+        0 10px 25px rgba(0, 0, 0, 0.2), 
+        0 4px 8px rgba(0, 0, 0, 0.1);
+    
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.home-page .nav-bar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+.home-page .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 40px;
+}
+
+.home-page .nav-links a {
+    text-decoration: none;
+    color: #000;
+    font-weight: 700; /* Bold links */
+    font-size: 1.1rem;
+}
+
+/* --- Cart Icon --- */
+.home-page .cart-container {
+    position: absolute;
+    right: 5%;
+}
+
+.home-page .cart-icon {
+    font-size: 1.8rem;
+    color: #000;
+    cursor: pointer;
+    /* Makes icon float too */
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+}
+
+/* --- Main Typography --- */
+.home-page .hero-text {
+    color: #e2e1e1;
+}
+
+.home-page .subtitle {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    text-transform: lowercase;
+}
+
+.home-page .title {
+    font-size: clamp(3rem, 8vw, 6rem); /* Responsive font sizing */
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1;
+}
+
 @media (max-width: 768px) {
     .login-page .content-wrapper { grid-template-columns: 1fr; }
     .login-page .main-container { padding: 30px; }
