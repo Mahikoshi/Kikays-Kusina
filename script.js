@@ -19,6 +19,8 @@ const database = firebase.database();
 
 document.addEventListener('DOMContentLoaded', () => {
     
+
+    //start of register logic
     // Only run this logic if we are on the Login/Register page
     if (document.body.classList.contains('login-page')) {
         
@@ -157,6 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    //end of login/register logic
 
     // Console confirmation for the Home Page
     if (document.body.classList.contains('home-page')) {
