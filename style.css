@@ -189,6 +189,8 @@ body {
     text-align: center;
 }
 
+/* End of CSS for Login Page */
+
 @media (max-width: 768px) {
     .login-page .content-wrapper { grid-template-columns: 1fr; }
     .login-page .main-container { padding: 30px; }
