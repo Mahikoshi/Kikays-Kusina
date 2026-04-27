@@ -240,11 +240,6 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.home-page .nav-bar:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-}
-
 .home-page .nav-links {
     list-style: none;
     display: flex;
@@ -259,6 +254,27 @@ body {
     color: #000;
     font-weight: 700; /* Bold links */
     font-size: 1.1rem;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.home-page .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #3D2C24;
+    transition: width 0.3s ease;
+}
+
+.home-page .nav-links a:hover {
+    color: #C57B5A;
+}
+
+.home-page .nav-links a:hover::after {
+    width: 100%;
 }
 
 /* --- Cart Icon --- */
