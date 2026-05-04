@@ -300,12 +300,13 @@ body {
     font-size: 2rem;
     font-weight: 400;
     margin-bottom: 5px;
+    font-family: "Outfit", sans-serif !important;
 }
 
 .home-page .title {
     font-size: clamp(3rem, 8vw, 6rem); /* Responsive font sizing */
     font-weight: 900;
-    margin-top: 3px;
+    margin-top: 1px;
     letter-spacing: -1px;
     line-height: 1;
 }
