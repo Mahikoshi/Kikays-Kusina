@@ -306,6 +306,7 @@ body {
 .home-page .title {
     font-size: clamp(3rem, 8vw, 6rem); /* Responsive font sizing */
     font-weight: 900;
+    margin-top: 3px;
     letter-spacing: -1px;
     line-height: 1;
 }
