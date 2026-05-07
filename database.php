@@ -2,7 +2,7 @@
 session_start();
 
 $host = "localhost";
-$dbname = "kikays_kusina";
+$dbname = "kikay's kusina";
 $username = "root"; 
 $password = ""; 
 
