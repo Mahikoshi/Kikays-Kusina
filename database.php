@@ -50,4 +50,32 @@ if ($action === 'reset') {
         echo json_encode(["status" => "error", "message" => "Email not found."]);
     }
 }
+
+// --- UPDATE ADDRESS ---
+if ($action === 'update_address') {
+    $fullAddr = $_POST['street'] . ", " . $_POST['brgy'] . ", " . $_POST['city'];
+    $stmt = $pdo->prepare("UPDATE users SET address = ?, phone = ? WHERE id = ?");
+    $stmt->execute([$fullAddr, $_POST['phone'], $_SESSION['user_id']]);
+    echo json_encode(["status" => "success"]);
+}
+
+// --- PLACE ORDER ---
+if ($action === 'place_order') {
+    $proofPath = "";
+    if ($_POST['method'] === 'GCash' && isset($_FILES['proof'])) {
+        $proofPath = "uploads/" . time() . "_" . $_FILES['proof']['name'];
+        if (!is_dir('uploads')) mkdir('uploads');
+        move_uploaded_file($_FILES['proof']['tmp_name'], $proofPath);
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO orders (user_id, items, total, method, proof, status) VALUES (?, ?, ?, ?, ?, 'Pending')");
+    $stmt->execute([
+        $_SESSION['user_id'], 
+        $_POST['items'], 
+        $_POST['total'], 
+        $_POST['method'], 
+        $proofPath
+    ]);
+    echo json_encode(["status" => "success"]);
+}
 ?>
