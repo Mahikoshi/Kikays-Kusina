@@ -202,8 +202,9 @@ body {
 .home-page .hero {
     height: 100vh;
     width: 100%;
-    background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), 
-                url('porku.png');
+    background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
+    url("Pics/porku.png"),
+    url("Pics/home.png");
     background-size: cover;
     background-position: center;
     display: flex;
@@ -227,26 +228,24 @@ body {
     background-color: #fcf6bd; /* Pale yellow */
     padding: 12px 45px;
     border-radius: 50px;
+    display: flex;
     justify-content: center;
+    align-items: center;
     
     /* The "Floating" Shadow Effect */
     border: 2px solid rgba(255, 255, 255, 0.7); /* Subtle white edge highlight */
-    box-shadow: 
-        0 10px 25px rgba(0, 0, 0, 0.2), 
-        0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
     
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.home-page .nav-bar:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
 }
 
 .home-page .nav-links {
     list-style: none;
     display: flex;
+    align-items: center;
     gap: 40px;
+    margin: 0;
+    padding: 0;
 }
 
 .home-page .nav-links a {
@@ -254,6 +253,27 @@ body {
     color: #000;
     font-weight: 700; /* Bold links */
     font-size: 1.1rem;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.home-page .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #3D2C24;
+    transition: width 0.3s ease;
+}
+
+.home-page .nav-links a:hover {
+    color: #C57B5A;
+}
+
+.home-page .nav-links a:hover::after {
+    width: 100%;
 }
 
 /* --- Cart Icon --- */
@@ -264,7 +284,7 @@ body {
 
 .home-page .cart-icon {
     font-size: 1.8rem;
-    color: #000;
+    color: #ffffff;
     cursor: pointer;
     /* Makes icon float too */
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
@@ -276,17 +296,42 @@ body {
 }
 
 .home-page .subtitle {
-    font-size: 1.2rem;
-    font-weight: 700;
+    font-size: 2rem;
+    font-weight: 400;
     margin-bottom: 5px;
-    text-transform: lowercase;
+    font-family: "Outfit", sans-serif !important;
 }
 
 .home-page .title {
     font-size: clamp(3rem, 8vw, 6rem); /* Responsive font sizing */
     font-weight: 900;
+    margin-top: 1px;
     letter-spacing: -1px;
     line-height: 1;
+}
+.home-page .info-section {
+    padding: 100px 10%;
+    background-color: var(--main-bg);
+    color: var(--text-dark);
+}
+
+.home-page .info-container {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.home-page .contact-info h2 {
+    font-size: 2.2rem;
+    margin-bottom: 25px;
+}
+
+.home-page .story-text p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    margin-bottom: 25px;
 }
 
 /* test */
