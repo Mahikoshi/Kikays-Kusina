@@ -9,19 +9,15 @@
 <body class="login-page"> 
     <div class="main-container">
         <header class="header">
-            <div class="logo-container">
-                <img src="Pics/logo.jpg" alt="Logo" class="main-logo">
-            </div>
+            <div class="logo-container"><img src="Pics/logo.jpg" alt="Logo" class="main-logo"></div>
             <h1>KIKAYS' KUSINA</h1>
         </header>
-
         <main class="content-wrapper">
             <section class="intro-panel">
                 <h2>Our Story</h2>
-                <p>Welcome to <strong>Kikays' Kusina</strong>, where every dish is seasoned with love.</p>
+                <p>Welcome to <strong>Kikay's Kusina</strong>, where every dish is seasoned with love.</p>
                 <div class="intro-footer"><span>Authentic. Fresh. Local.</span></div>
             </section>
-
             <section class="login-panel">
                 <div id="loginSection">
                     <h3>Welcome</h3>
@@ -58,6 +54,19 @@
                         <button type="submit" class="btn-submit">REGISTER</button>
                     </form>
                     <button id="showLoginBtn" class="create-user-link">Back to Login</button>
+                </div>
+
+                <div id="forgotSection" class="hidden">
+                    <h3>Reset Password</h3>
+                    <div id="forgotError" class="error-box hidden"><span class="error-msg-text"></span></div>
+                    <form id="forgotForm">
+                        <div class="input-group">
+                            <input type="email" id="resetEmail" placeholder="Confirm Registered Email" required>
+                            <input type="password" id="newPassword" placeholder="New Password" required>
+                        </div>
+                        <button type="submit" class="btn-submit">UPDATE PASSWORD</button>
+                    </form>
+                    <button id="backFromForgotBtn" class="create-user-link">Back to Login</button>
                 </div>
             </section>
         </main>
