@@ -6,6 +6,18 @@ $dbname = "kikay's kusina";
 $username = "root"; 
 $password = ""; 
 
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Security Helper
+function sanitize($data) {
+    global $conn;
+    return mysqli_real_escape_string($conn, htmlspecialchars(strip_tags($data)));
+}
+
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

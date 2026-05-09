@@ -1,211 +1,196 @@
-(() => {
-  // ── State ──────────────────────────────────────
-  const cart = [];
-  let activeCategory = 'Pork';
-  let searchQuery = '';
+document.addEventListener('DOMContentLoaded', () => {
+    let menuData = [];
+    let cart = [];
 
-  // ── DOM refs ───────────────────────────────────
-  const navItems       = document.querySelectorAll('.nav-item');
-  const searchInput    = document.getElementById('search-input');
-  const menuGrid       = document.getElementById('menu-grid');
-  const categoryTitle  = document.getElementById('category-title');
-  const cartItemsList  = document.getElementById('cart-items');
-  const subtotalEl     = document.getElementById('cart-subtotal');
-  const deliveryEl     = document.getElementById('cart-delivery');
-  const totalEl        = document.getElementById('cart-total');
-  const checkoutBtn    = document.getElementById('checkout-btn');
-  const addressBlock   = document.getElementById('address-block');
-  const addAddressBtn  = document.getElementById('add-address-btn');
+    // --- DOM ELEMENTS ---
+    const menuGrid = document.getElementById('menu-grid');
+    const categoryBtns = document.querySelectorAll('.cat-btn');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const searchInput = document.getElementById('search-input');
+    const cartContainer = document.getElementById('cart-items');
+    const subtotalEl = document.getElementById('subtotal');
+    const totalEl = document.getElementById('total');
 
-  // ── Menu data (injected from PHP via window.MENU_DATA) ──
-  const menuData = window.MENU_DATA || {};
+    // --- ADDRESS ELEMENTS ---
+    const addressModal = document.getElementById('address-modal');
+    const addAddressBtn = document.getElementById('add-address-btn');
+    const saveAddressBtn = document.getElementById('save-address-btn');
+    const addressInput = document.getElementById('address-input');
+    const addressDisplay = document.getElementById('address-display');
+    const addressText = document.getElementById('address-text');
+    const editAddressBtn = document.getElementById('edit-address-btn');
+    const removeAddressBtn = document.getElementById('remove-address-btn');
 
-  // ── Seed initial cart from PHP ─────────────────
-  if (window.INITIAL_CART && Array.isArray(window.INITIAL_CART)) {
-    window.INITIAL_CART.forEach(item => cart.push({ ...item }));
-  }
+    // --- CHECKOUT ELEMENTS ---
+    const checkoutModal = document.getElementById('checkout-modal');
+    const checkoutItemsList = document.getElementById('checkout-items-list');
+    const checkoutTotal = document.getElementById('checkout-total');
+    const paymentBtns = document.querySelectorAll('.payment-option-btn');
+    const uploadSection = document.getElementById('gcash-upload-section');
 
-  // ── Category navigation ────────────────────────
-  navItems.forEach(item => {
-    item.addEventListener('click', () => {
-      activeCategory = item.dataset.category;
-      navItems.forEach(n => n.classList.remove('active'));
-      item.classList.add('active');
-      searchQuery = '';
-      if (searchInput) searchInput.value = '';
-      renderMenu();
-    });
-  });
+    // --- 1. FETCH DATA ---
+    fetch('menu.php')
+        .then(res => res.json())
+        .then(data => {
+            menuData = data;
+            renderMenu('pork'); 
+        })
+        .catch(err => console.error("Fetch Error:", err));
 
-  // ── Search ─────────────────────────────────────
-  if (searchInput) {
-    searchInput.addEventListener('input', e => {
-      searchQuery = e.target.value.trim().toLowerCase();
-      renderMenu();
-    });
-  }
+    // --- 2. RENDER MENU ---
+    function renderMenu(category, searchTerm = '') {
+        menuGrid.innerHTML = '';
+        const filtered = menuData.filter(item => {
+            const matchesCat = category === 'all' || item.category.toLowerCase() === category.toLowerCase();
+            const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+            return matchesCat && matchesSearch;
+        });
 
-  // ── Render menu grid ───────────────────────────
-  function renderMenu() {
-    if (!menuGrid) return;
+        filtered.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'menu-card';
+            card.innerHTML = `
+                <div class="menu-card-img-wrap">
+                    <img src="${item.image_url}" class="menu-card-img" alt="${item.name}">
+                </div>
+                <div class="menu-card-body">
+                    <h3 class="menu-card-name">${item.name}</h3>
+                    <p class="menu-card-desc">${item.description}</p>
+                    <p class="menu-card-price">₱${parseFloat(item.price || 0).toFixed(2)}</p>
+                    <button class="modal-add-cart-btn" data-id="${item.id}">Add to Cart</button>
+                </div>
+            `;
+            menuGrid.appendChild(card);
+        });
 
-    let items = menuData[activeCategory] || [];
-
-    if (searchQuery) {
-      const all = Object.values(menuData).flat();
-      items = all.filter(i =>
-        i.name.toLowerCase().includes(searchQuery) ||
-        i.desc.toLowerCase().includes(searchQuery)
-      );
+        document.querySelectorAll('.modal-add-cart-btn').forEach(btn => {
+            btn.onclick = () => addToCart(btn.getAttribute('data-id'));
+        });
     }
 
-    if (categoryTitle) {
-      categoryTitle.textContent = searchQuery ? 'Search Results' : activeCategory;
-    }
+    // --- 3. CART LOGIC (FIXED NaN) ---
+    function addToCart(id) {
+        const item = menuData.find(i => i.id == id);
+        if (!item) return;
 
-    if (items.length === 0) {
-      menuGrid.innerHTML = '<p class="no-results">No items found.</p>';
-      return;
-    }
-
-    menuGrid.innerHTML = items.map(item => `
-      <div class="menu-card" data-id="${item.id}" data-category="${item.category}" role="button" tabindex="0" aria-label="Add ${item.name} to cart">
-        <img class="menu-card-img" src="${item.img}" alt="${item.name}" loading="lazy" />
-        <div class="menu-card-body">
-          <div class="menu-card-name">${item.name}</div>
-          <div class="menu-card-desc">${item.desc}</div>
-          <div class="menu-card-price">₱${item.price.toFixed(2)}</div>
-        </div>
-      </div>
-    `).join('');
-
-    menuGrid.querySelectorAll('.menu-card').forEach(card => {
-      card.addEventListener('click', () => addToCart(card.dataset.id, card.dataset.category));
-      card.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') addToCart(card.dataset.id, card.dataset.category);
-      });
-    });
-  }
-
-  // ── Cart logic ─────────────────────────────────
-  function findMenuItem(id, category) {
-    const cats = category ? [category] : Object.keys(menuData);
-    for (const cat of cats) {
-      const found = (menuData[cat] || []).find(i => i.id === id);
-      if (found) return found;
-    }
-    return null;
-  }
-
-  function addToCart(id, category) {
-    const item = findMenuItem(id, category);
-    if (!item) return;
-
-    const existing = cart.find(c => c.id === id);
-    if (existing) {
-      existing.qty++;
-    } else {
-      cart.push({ ...item, qty: 1 });
-    }
-    renderCart();
-    animateCartAdd();
-  }
-
-  function removeFromCart(id) {
-    const idx = cart.findIndex(c => c.id === id);
-    if (idx === -1) return;
-    if (cart[idx].qty > 1) {
-      cart[idx].qty--;
-    } else {
-      cart.splice(idx, 1);
-    }
-    renderCart();
-  }
-
-  function renderCart() {
-    if (!cartItemsList) return;
-
-    if (cart.length === 0) {
-      cartItemsList.innerHTML = '<p class="cart-empty">Your cart is empty.</p>';
-      updateTotals(0);
-      return;
-    }
-
-    cartItemsList.innerHTML = cart.map(item => `
-      <div class="cart-item" data-id="${item.id}">
-        <img class="cart-item-img" src="${item.img}" alt="${item.name}" />
-        <div class="cart-item-info">
-          <div class="cart-item-name">${item.name}</div>
-          <div class="cart-item-qty">
-            <button class="qty-btn qty-minus" data-id="${item.id}" aria-label="Decrease quantity">−</button>
-            <span class="qty-value">${item.qty}</span>
-            <button class="qty-btn qty-plus" data-id="${item.id}" aria-label="Increase quantity">+</button>
-          </div>
-        </div>
-        <div class="cart-item-price">₱${(item.price * item.qty).toFixed(2)}</div>
-      </div>
-    `).join('');
-
-    cartItemsList.querySelectorAll('.qty-minus').forEach(btn => {
-      btn.addEventListener('click', () => removeFromCart(btn.dataset.id));
-    });
-    cartItemsList.querySelectorAll('.qty-plus').forEach(btn => {
-      btn.addEventListener('click', () => addToCart(btn.dataset.id, null));
-    });
-
-    const subtotal = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-    updateTotals(subtotal);
-  }
-
-  function updateTotals(subtotal) {
-    const delivery = subtotal > 0 ? 67 : 0;
-    if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-    if (deliveryEl) deliveryEl.textContent = `$${delivery.toFixed(2)}`;
-    if (totalEl)    totalEl.textContent    = `$${(subtotal + delivery).toFixed(2)}`;
-  }
-
-  function animateCartAdd() {
-    if (!checkoutBtn) return;
-    checkoutBtn.classList.add('pulse');
-    setTimeout(() => checkoutBtn.classList.remove('pulse'), 400);
-  }
-
-  // ── Address ────────────────────────────────────
-  if (addAddressBtn) {
-    addAddressBtn.addEventListener('click', () => {
-      const addr = prompt('Enter your delivery address:');
-      if (addr && addr.trim()) {
-        if (addressBlock) {
-          addressBlock.innerHTML = `
-            <div class="cart-address-label">Delivery Address</div>
-            <div class="cart-address-text">${addr.trim()}</div>
-          `;
+        const existing = cart.find(c => c.id == id);
+        if (existing) {
+            existing.qty++;
+        } else {
+            cart.push({ ...item, qty: 1, price: parseFloat(item.price) || 0 });
         }
-      }
-    });
-  }
+        updateCartUI();
+    }
 
-  // ── View All button ────────────────────────────
-  const viewAllBtn = document.getElementById('view-all-btn');
-  if (viewAllBtn) {
-    viewAllBtn.addEventListener('click', () => {
-      // Already showing category — scroll to top of grid
-      menuGrid && menuGrid.scrollIntoView({ behavior: 'smooth' });
-    });
-  }
+    function updateCartUI() {
+        cartContainer.innerHTML = '';
+        let currentTotal = 0;
 
-  // ── Checkout ───────────────────────────────────
-  if (checkoutBtn) {
-    checkoutBtn.addEventListener('click', () => {
-      if (cart.length === 0) {
-        alert('Your cart is empty. Add some items first!');
-        return;
-      }
-      alert(`Order placed! Total: $${(cart.reduce((s,i) => s + i.price*i.qty, 0) + 67).toFixed(2)}\nThank you for ordering from Kikay\'s Kusina!`);
-    });
-  }
+        cart.forEach(item => {
+            const itemTotal = item.price * item.qty;
+            currentTotal += itemTotal;
+            
+            const div = document.createElement('div');
+            div.className = 'cart-item';
+            div.innerHTML = `
+                <div class="cart-item-info">
+                    <p class="cart-item-name">${item.name}</p>
+                    <p class="cart-item-price">₱${itemTotal.toFixed(2)} (${item.qty}x)</p>
+                </div>
+                <div class="cart-item-qty">
+                    <button class="qty-btn" onclick="window.updateQty(${item.id}, -1)">-</button>
+                    <span class="qty-num">${item.qty}</span>
+                    <button class="qty-btn" onclick="window.updateQty(${item.id}, 1)">+</button>
+                </div>
+            `;
+            cartContainer.appendChild(div);
+        });
 
-  // ── Init ───────────────────────────────────────
-  renderMenu();
-  renderCart();
-})();
+        const formatted = `₱${currentTotal.toFixed(2)}`;
+        subtotalEl.innerText = formatted;
+        totalEl.innerText = formatted;
+        if(checkoutTotal) checkoutTotal.innerText = formatted;
+    }
+
+    window.updateQty = (id, change) => {
+        const item = cart.find(c => c.id == id);
+        if (item) {
+            item.qty += change;
+            if (item.qty <= 0) cart = cart.filter(c => c.id != id);
+            updateCartUI();
+            // Refresh checkout list if modal is open
+            if (!checkoutModal.classList.contains('hidden')) syncCheckoutList();
+        }
+    };
+
+    // --- 4. ADDRESS LOGIC ---
+    addAddressBtn.onclick = () => addressModal.classList.remove('hidden');
+
+    saveAddressBtn.onclick = (e) => {
+        e.preventDefault();
+        const val = addressInput.value.trim();
+        if (val) {
+            addressText.innerText = val;
+            addressDisplay.classList.remove('hidden');
+            addAddressBtn.classList.add('hidden');
+            addressModal.classList.add('hidden');
+        }
+    };
+
+    editAddressBtn.onclick = () => {
+        addressInput.value = addressText.innerText;
+        addressModal.classList.remove('hidden');
+    };
+
+    removeAddressBtn.onclick = () => {
+        addressText.innerText = '';
+        addressDisplay.classList.add('hidden');
+        addAddressBtn.classList.remove('hidden');
+        addressInput.value = '';
+    };
+
+    document.getElementById('address-modal-close').onclick = () => addressModal.classList.add('hidden');
+
+    // --- 5. CHECKOUT LOGIC ---
+    function syncCheckoutList() {
+        checkoutItemsList.innerHTML = '';
+        cart.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'checkout-item-row';
+            row.innerHTML = `<span>${item.qty}x ${item.name}</span><span>₱${(item.price * item.qty).toFixed(2)}</span>`;
+            checkoutItemsList.appendChild(row);
+        });
+        checkoutTotal.innerText = totalEl.innerText;
+    }
+
+    document.getElementById('checkout-btn').onclick = () => {
+        if (cart.length === 0) return alert("Cart is empty!");
+        syncCheckoutList();
+        checkoutModal.classList.remove('hidden');
+    };
+
+    paymentBtns.forEach(btn => {
+        btn.onclick = () => {
+            paymentBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            uploadSection.classList.toggle('hidden', btn.dataset.method !== 'gcash');
+        };
+    });
+
+    document.getElementById('checkout-modal-close').onclick = () => checkoutModal.classList.add('hidden');
+    document.getElementById('success-close-btn').onclick = () => document.getElementById('success-modal').classList.add('hidden');
+
+    // --- 6. NAV & SEARCH ---
+    searchInput.addEventListener('input', (e) => {
+        const activeBtn = document.querySelector('.cat-btn.active');
+        renderMenu(activeBtn ? activeBtn.dataset.cat : 'pork', e.target.value);
+    });
+
+    categoryBtns.forEach(btn => {
+        btn.onclick = () => {
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderMenu(btn.dataset.cat, searchInput.value);
+        };
+    });
+});
