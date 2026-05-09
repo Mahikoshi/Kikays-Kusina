@@ -226,7 +226,7 @@ body {
 
 .home-page .nav-bar {
     background-color: #fcf6bd; /* Pale yellow */
-    padding: 12px 45px;
+    padding: 25px 100px;
     border-radius: 50px;
     display: flex;
     justify-content: center;
@@ -252,7 +252,7 @@ body {
     text-decoration: none;
     color: #000;
     font-weight: 700; /* Bold links */
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     position: relative;
     transition: color 0.3s ease;
 }
@@ -682,23 +682,24 @@ body {
 }
 
 /* contact-page */
+
 /* admin page */
 
-* {
+.admin-page * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-body {
+.admin-page body {
     display: flex;
     background-color: #f4f7f6;
     height: 100vh;
 }
 
 /* Sidebar Styling */
-.sidebar {
+.admin-page .sidebar {
     width: 250px;
     background-color: #2c3e50;
     color: white;
@@ -706,17 +707,17 @@ body {
     flex-direction: column;
 }
 
-.sidebar .logo {
+.admin-page .sidebar .logo {
     padding: 20px;
     text-align: center;
     background-color: #1a252f;
 }
 
-.sidebar nav {
+.admin-page .sidebar nav {
     margin-top: 20px;
 }
 
-.sidebar nav a {
+.admin-page .sidebar nav a {
     display: block;
     padding: 15px 25px;
     color: #bdc3c7;
@@ -724,20 +725,20 @@ body {
     transition: 0.3s;
 }
 
-.sidebar nav a:hover, .sidebar nav a.active {
+.admin-page  .sidebar nav a:hover, .sidebar nav a.active {
     background-color: #34495e;
     color: white;
     border-left: 4px solid #3498db;
 }
 
 /* Main Content Area */
-.main-content {
+.admin-page  .main-content {
     flex: 1;
     overflow-y: auto;
     padding: 30px;
 }
 
-header {
+.admin-page header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -745,67 +746,67 @@ header {
 }
 
 /* Stats Cards */
-.stats-grid {
+.admin-page .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     margin-bottom: 30px;
 }
 
-.stat-card {
+.admin-page .stat-card {
     background: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-.stat-card h3 {
+.admin-page .stat-card h3 {
     font-size: 14px;
     color: #7f8c8d;
     margin-bottom: 10px;
 }
 
-.stat-card p {
+.admin-page .stat-card p {
     font-size: 24px;
     font-weight: bold;
     color: #2c3e50;
 }
 
 /* Table Styling */
-.order-table-container {
+.admin-page .order-table-container {
     background: white;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-table {
+.admin-page table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
 }
 
-thead {
+.admin-page thead {
     background-color: #ecf0f1;
 }
 
-th, td {
+.admin-page th, td {
     padding: 15px;
     border-bottom: 1px solid #eee;
 }
 
 /* Status Badges */
-.status {
+.admin-page .status {
     padding: 5px 10px;
     border-radius: 20px;
     font-size: 12px;
     font-weight: bold;
 }
 
-.status.pending { background: #f1c40f; color: #fff; }
-.status.completed { background: #2ecc71; color: #fff; }
+.admin-page .status.pending { background: #f1c40f; color: #fff; }
+.admin-page .status.completed { background: #2ecc71; color: #fff; }
 
-.btn {
+.admin-page .btn {
     padding: 6px 12px;
     border: none;
     border-radius: 4px;
@@ -813,7 +814,7 @@ th, td {
     font-size: 13px;
 }
 
-.btn.edit { background: #3498db; color: white; }
+.admin-page .btn.edit { background: #3498db; color: white; }
 
 /*admin page*/
 
