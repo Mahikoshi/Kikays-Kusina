@@ -214,6 +214,17 @@ body {
 }
 
 /* --- Header & Floating Nav --- */
+
+html, body {
+  scroll-behavior: smooth !important;
+}
+
+#about {
+  /* This prevents your floating nav bar from covering the title */
+  scroll-margin-top: 170px; 
+}
+
+
 .home-page .header-container {
     position: absolute;
     top: 30px;
