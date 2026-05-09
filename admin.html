@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Ordering System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo">
+            <h2>AdminPanel</h2>
+        </div>
+        <nav>
+            <a href="#" class="active">Orders</a>
+            <a href="#">Inventory</a>
+            <a href="#">Customers</a>
+            <a href="#">Analytics</a>
+            <a href="#">Settings</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1>Order Management</h1>
+            <div class="user-profile">
+                <span>Admin User</span>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Orders</h3>
+                <p>124</p>
+            </div>
+            <div class="stat-card">
+                <h3>Pending</h3>
+                <p>12</p>
+            </div>
+            <div class="stat-card">
+                <h3>Revenue</h3>
+                <p>₱45,200</p>
+            </div>
+        </section>
+
+        <section class="order-table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Total Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#10025</td>
+                        <td>John Doe</td>
+                        <td>2x Burger, 1x Coke</td>
+                        <td>₱350.00</td>
+                        <td><span class="status pending">Pending</span></td>
+                        <td>
+                            <button class="btn edit">Update</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#10024</td>
+                        <td>Jane Smith</td>
+                        <td>1x Pasta</td>
+                        <td>₱220.00</td>
+                        <td><span class="status completed">Completed</span></td>
+                        <td>
+                            <button class="btn edit">Update</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+</body>
+</html>
