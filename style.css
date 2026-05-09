@@ -226,15 +226,15 @@ body {
 
 .home-page .nav-bar {
     background-color: #fcf6bd; /* Pale yellow */
-    padding: 25px 100px;
+    padding: 25px 60px;
     border-radius: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
     
     /* The "Floating" Shadow Effect */
-    border: 2px solid rgba(255, 255, 255, 0.7); /* Subtle white edge highlight */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(47, 44, 44, 0.7); /* Subtle white edge highlight */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08), 0 5px 15px rgba(0, 0, 0, 0.05);
     
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -304,10 +304,11 @@ body {
 
 .home-page .title {
     font-size: clamp(3rem, 8vw, 6rem); /* Responsive font sizing */
-    font-weight: 900;
+    font-weight: 800;
     margin-top: 1px;
     letter-spacing: -1px;
     line-height: 1;
+    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
 }
 .home-page .info-section {
     padding: 100px 10%;
