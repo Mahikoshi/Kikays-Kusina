@@ -6,7 +6,7 @@ $dbname = "kikay's kusina";
 $username = "root"; 
 $password = ""; 
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($host, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -33,6 +33,7 @@ if ($action === 'login') {
     $user = $stmt->fetch();
     if ($user) {
         $_SESSION['role'] = $user['role'];
+        $_SESSION['user_id'] = $user['id']; // ADD THIS LINE
         echo json_encode(["status" => "success", "role" => $user['role']]);
     } else {
         echo json_encode(["status" => "error", "message" => "Invalid Email or Password"]);

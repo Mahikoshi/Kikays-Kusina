@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await res.json();
         if (data.status === 'success') {
             sessionStorage.setItem('userRole', data.role);
-            window.location.href = data.role === 'admin' ? "adminUI.html" : "Home.html";
+            window.location.href = data.role === 'admin' ? "admin.html" : "home.html";
         } else showAlert(alerts.loginErr, data.message);
     };
 
