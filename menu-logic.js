@@ -193,4 +193,28 @@ document.addEventListener('DOMContentLoaded', () => {
             renderMenu(btn.dataset.cat, searchInput.value);
         };
     });
+
+    // Dynamic Greeting
+    const firstName = sessionStorage.getItem('firstName') || "User";
+    document.getElementById('user-name').textContent = firstName;
+
+    // Fulfillment Toggle Logic
+    let currentFulfillment = 'delivery';
+    window.toggleFulfillment = (method) => {
+        currentFulfillment = method;
+        const addrSection = document.querySelector('.address-section');
+        const label = document.getElementById('schedule-label');
+        
+        document.getElementById('delivery-btn').classList.toggle('active', method === 'delivery');
+        document.getElementById('pickup-btn').classList.toggle('active', method === 'pickup');
+
+        if(method === 'pickup') {
+            addrSection.classList.add('hidden');
+            label.textContent = "Pickup Date & Time";
+        } else {
+            addrSection.classList.remove('hidden');
+            label.textContent = "Delivery Date & Time";
+        }
+    };
+    
 });

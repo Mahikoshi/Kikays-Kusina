@@ -1,5 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
-    if (!document.body.classList.contains('login-page')) return;
+    // 1. SESSION REDIRECT LOGIC
+    const userRole = sessionStorage.getItem('userRole');
+    if (document.body.classList.contains('login-page') && userRole) {
+        window.location.href = "home.html";
+        return;
+    }
+
+    // 2. GLOBAL LOGOUT FUNCTION
+    window.logoutUser = () => {
+        sessionStorage.clear();
+        fetch('database.php', { method: 'POST', body: new URLSearchParams({'action': 'logout'}) }); // Optional: clear PHP session
+        window.location.href = "login.html";
+    };
 
     const views = {
         login: document.getElementById('loginSection'),
@@ -44,21 +56,18 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('forgotPassLink').onclick = (e) => { e.preventDefault(); showView('forgot'); };
     document.getElementById('backFromForgotBtn').onclick = () => showView('login');
 
-    document.getElementById('loginForm').onsubmit = async (e) => {
+document.getElementById('loginForm').onsubmit = async (e) => {
         e.preventDefault();
-        const email = loginEmailInput.value;
-        if (rememberMeCheckbox.checked) localStorage.setItem('rememberedEmail', email);
-        else localStorage.removeItem('rememberedEmail');
-
         const fd = new FormData();
         fd.append('action', 'login');
-        fd.append('email', email);
+        fd.append('email', document.getElementById('loginEmail').value);
         fd.append('password', document.getElementById('loginPassword').value);
 
         const res = await fetch('database.php', { method: 'POST', body: fd });
         const data = await res.json();
         if (data.status === 'success') {
             sessionStorage.setItem('userRole', data.role);
+            sessionStorage.setItem('firstName', data.firstName);
             window.location.href = data.role === 'admin' ? "admin.html" : "home.html";
         } else showAlert(alerts.loginErr, data.message);
     };

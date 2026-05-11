@@ -33,8 +33,16 @@ if ($action === 'login') {
     $user = $stmt->fetch();
     if ($user) {
         $_SESSION['role'] = $user['role'];
-        $_SESSION['user_id'] = $user['id']; // ADD THIS LINE
-        echo json_encode(["status" => "success", "role" => $user['role']]);
+        $_SESSION['user_id'] = $user['id'];
+        // Extract first name for the dynamic greeting
+        $nameParts = explode(' ', trim($user['full_name']));
+        $_SESSION['first_name'] = $nameParts[0]; 
+        
+        echo json_encode([
+            "status" => "success", 
+            "role" => $user['role'], 
+            "firstName" => $_SESSION['first_name']
+        ]);
     } else {
         echo json_encode(["status" => "error", "message" => "Invalid Email or Password"]);
     }
@@ -75,19 +83,21 @@ if ($action === 'update_address') {
 // --- PLACE ORDER ---
 if ($action === 'place_order') {
     $proofPath = "";
-    if ($_POST['method'] === 'GCash' && isset($_FILES['proof'])) {
+    if ($_POST['method'] === 'gcash' && isset($_FILES['proof'])) {
         $proofPath = "uploads/" . time() . "_" . $_FILES['proof']['name'];
-        if (!is_dir('uploads')) mkdir('uploads');
+        if (!is_dir('uploads')) mkdir('uploads', 0777, true);
         move_uploaded_file($_FILES['proof']['tmp_name'], $proofPath);
     }
 
-    $stmt = $pdo->prepare("INSERT INTO orders (user_id, items, total, method, proof, status) VALUES (?, ?, ?, ?, ?, 'Pending')");
+    $stmt = $pdo->prepare("INSERT INTO orders (user_id, items, total, method, proof, fulfillment_type, fulfillment_time, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')");
     $stmt->execute([
         $_SESSION['user_id'], 
         $_POST['items'], 
         $_POST['total'], 
         $_POST['method'], 
-        $proofPath
+        $proofPath,
+        $_POST['fulfillment_type'],
+        $_POST['fulfillment_time']
     ]);
     echo json_encode(["status" => "success"]);
 }

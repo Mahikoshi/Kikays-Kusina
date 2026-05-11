@@ -147,10 +147,18 @@
   </div>
 
   <!-- CHECKOUT MODAL -->
-  <div id="checkout-modal" class="modal-overlay hidden">
-    <div class="modal-card checkout-modal-card">
-      <button id="checkout-modal-close" class="modal-close">✕</button>
-      <h3 class="modal-name">Complete Your Order</h3>
+<div class="checkout-section">
+        <p class="checkout-label">Fulfillment Method</p>
+        <div class="payment-options">
+          <button type="button" id="delivery-btn" class="payment-option-btn active" onclick="toggleFulfillment('delivery')">Delivery</button>
+          <button type="button" id="pickup-btn" class="payment-option-btn" onclick="toggleFulfillment('pickup')">Pickup</button>
+        </div>
+      </div>
+
+      <div id="schedule-section" class="checkout-section">
+        <p id="schedule-label" class="checkout-label">Delivery Date & Time</p>
+        <input type="datetime-local" id="fulfillment-time" class="checkout-input" />
+      </div>
 
       <div class="checkout-section">
         <p class="checkout-label">Email Address</p>
