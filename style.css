@@ -198,6 +198,45 @@ body {
 
 /* Start of CSS for Home Page */
 
+/*log out*/
+.logout-btn {
+
+    background-color: #fcf6bd; /* Pale yellow */
+    padding: 25px 60px;
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: #000000; /* This makes the text and icon black */
+    text-decoration: none; /* Ensures there is no blue underline */
+    font-size: 20px; /* Increase this number to make it bigger */
+    font-weight: bold;
+
+    margin-left: 50px;
+    
+    /* The "Floating" Shadow Effect */
+    border: 2px solid rgba(47, 44, 44, 0.7); /* Subtle white edge highlight */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08), 0 5px 15px rgba(0, 0, 0, 0.05);
+    
+}
+
+.logout-btn:hover {
+    background-color: #b4af6e;
+}
+
+.logout-btn i {
+    margin-right: 5px;
+    
+}
+
+/*basta*/
+
+/*basta/
+
+/*log-out/
+
+
 /* --- Hero Section & Background --- */
 .home-page .hero {
     height: 100vh;
@@ -242,6 +281,7 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-left: 5px;
     
     /* The "Floating" Shadow Effect */
     border: 2px solid rgba(47, 44, 44, 0.7); /* Subtle white edge highlight */
