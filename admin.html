@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <script>
+    // Immediate Redirect: Kick out unauthorized users before the page loads
+    if (!sessionStorage.getItem('userRole')) {
+        window.location.replace("login.html");
+    }
+</script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard | Ordering System</title>
 
     <link rel="stylesheet" href="admin-style.css" />
 </head>
-
-
-<script>
-    // Immediate Redirect: Kick out unauthorized users before the page loads
-    if (!sessionStorage.getItem('userRole')) {
-        window.location.replace("login.html");
-    }
-</script>
 
 
 <body class="admin-page">
@@ -142,7 +142,7 @@
     <!-- =========================
          JAVASCRIPT
     ========================== -->
-    <script src="script.js"></script>
-
+  <script src="script.js"></script>
+  <script src="admin-logic.js"></script>
 </body>
 </html>
