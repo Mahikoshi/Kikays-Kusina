@@ -716,7 +716,6 @@ html, body {
 .contact-header {
     text-align: center;
     padding: 100px 20px;
-    background: url('path-to-your-bread-image.jpg') center bottom no-repeat;
     background-size: cover;
     background-color: var(--bg-light);
     margin-bottom: 60px;
