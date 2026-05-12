@@ -6,6 +6,14 @@
     <title>Kikay's Kusina | Login</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
+<script>
+    // Immediate Redirect: Kick out unauthorized users before the page loads
+    if (!sessionStorage.getItem('userRole')) {
+        window.location.replace("login.html");
+    }
+</script>
+
 <body class="login-page"> 
     <div class="main-container">
         <header class="header">

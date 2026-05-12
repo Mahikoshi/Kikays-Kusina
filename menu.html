@@ -8,6 +8,15 @@
 </head>
 <body>
 
+
+<script>
+    // Immediate Redirect: Kick out unauthorized users before the page loads
+    if (!sessionStorage.getItem('userRole')) {
+        window.location.replace("login.html");
+    }
+</script>
+
+
   <!-- NAV -->
   <nav class="navbar">
     <div class="nav-links">
