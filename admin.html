@@ -8,6 +8,15 @@
     <link rel="stylesheet" href="admin-style.css" />
 </head>
 
+
+<script>
+    // Immediate Redirect: Kick out unauthorized users before the page loads
+    if (!sessionStorage.getItem('userRole')) {
+        window.location.replace("login.html");
+    }
+</script>
+
+
 <body class="admin-page">
 
     <!-- =========================
@@ -21,10 +30,6 @@
 
         <nav class="sidebar-nav">
             <a href="#" class="active">Orders</a>
-            <a href="#">Inventory</a>
-            <a href="#">Customers</a>
-            <a href="#">Analytics</a>
-            <a href="#">Settings</a>
         </nav>
 
     </aside>

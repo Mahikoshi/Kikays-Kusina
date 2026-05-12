@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- DOM ELEMENTS ---
     const menuGrid = document.getElementById('menu-grid');
     const categoryBtns = document.querySelectorAll('.cat-btn');
-    const navLinks = document.querySelectorAll('.nav-link');
     const searchInput = document.getElementById('search-input');
     const cartContainer = document.getElementById('cart-items');
     const subtotalEl = document.getElementById('subtotal');
@@ -68,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 3. CART LOGIC (FIXED NaN) ---
+    // --- 3. CART LOGIC ---
     function addToCart(id) {
         const item = menuData.find(i => i.id == id);
         if (!item) return;
@@ -118,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
             item.qty += change;
             if (item.qty <= 0) cart = cart.filter(c => c.id != id);
             updateCartUI();
-            // Refresh checkout list if modal is open
             if (!checkoutModal.classList.contains('hidden')) syncCheckoutList();
         }
     };
@@ -151,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('address-modal-close').onclick = () => addressModal.classList.add('hidden');
 
-    // --- 5. CHECKOUT LOGIC ---
+    // --- 5. CHECKOUT & DATABASE SUBMISSION ---
     function syncCheckoutList() {
         checkoutItemsList.innerHTML = '';
         cart.forEach(item => {
@@ -176,6 +174,52 @@ document.addEventListener('DOMContentLoaded', () => {
             uploadSection.classList.toggle('hidden', btn.dataset.method !== 'gcash');
         };
     });
+
+    // THE ACTUAL PLACE ORDER LOGIC
+    document.getElementById('place-order-btn').onclick = async () => {
+        const activePayment = document.querySelector('.payment-option-btn.active');
+        const fulfillmentTime = document.getElementById('fulfillment-time').value;
+
+        // Basic Validation
+        if (!fulfillmentTime) return alert("Please select a date and time!");
+        if (currentFulfillment === 'delivery' && addressText.innerText === '') {
+            return alert("Please add a delivery address!");
+        }
+
+        const fd = new FormData();
+        fd.append('action', 'place_order');
+        fd.append('total', totalEl.innerText.replace('₱', ''));
+        fd.append('method', activePayment.dataset.method);
+        fd.append('fulfillment_type', currentFulfillment);
+        fd.append('fulfillment_time', fulfillmentTime);
+        
+        // Convert cart to a readable string for the database
+        const itemsString = cart.map(i => `${i.qty}x ${i.name}`).join(', ');
+        fd.append('items', itemsString);
+
+        // Append GCash Proof if it exists
+        const proofFile = document.getElementById('gcash-proof-input').files[0];
+        if (activePayment.dataset.method === 'gcash' && proofFile) {
+            fd.append('proof', proofFile);
+        }
+
+        try {
+            const res = await fetch('database.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            
+            if (data.status === 'success') {
+                checkoutModal.classList.add('hidden');
+                document.getElementById('success-modal').classList.remove('hidden');
+                cart = []; // Clear Cart on Success
+                updateCartUI();
+            } else {
+                alert("Error: " + data.message);
+            }
+        } catch (err) {
+            console.error("Order Error:", err);
+            alert("Something went wrong placing your order.");
+        }
+    };
 
     document.getElementById('checkout-modal-close').onclick = () => checkoutModal.classList.add('hidden');
     document.getElementById('success-close-btn').onclick = () => document.getElementById('success-modal').classList.add('hidden');
@@ -216,5 +260,4 @@ document.addEventListener('DOMContentLoaded', () => {
             label.textContent = "Delivery Date & Time";
         }
     };
-    
 });

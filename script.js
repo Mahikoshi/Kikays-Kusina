@@ -1,23 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. SESSION REDIRECT LOGIC
+    // 1. SESSION PROTECTION FOR LOGIN PAGE
     const userRole = sessionStorage.getItem('userRole');
     if (document.body.classList.contains('login-page') && userRole) {
-        window.location.href = "home.html";
+        window.location.replace(userRole === 'admin' ? "admin.html" : "home.html");
         return;
     }
 
     // 2. GLOBAL LOGOUT FUNCTION
-    window.logoutUser = () => {
-        sessionStorage.clear();
-        fetch('database.php', { method: 'POST', body: new URLSearchParams({'action': 'logout'}) }); // Optional: clear PHP session
-        window.location.href = "login.html";
+    window.logoutUser = async function() {
+        const fd = new FormData();
+        fd.append('action', 'logout');
+
+        try {
+            // Destroy PHP session on the server
+            await fetch('database.php', { method: 'POST', body: fd });
+            
+            // Wipe local session data
+            sessionStorage.clear();
+            
+            // replace() deletes the current page from browser history
+            window.location.replace("login.html");
+        } catch (err) {
+            sessionStorage.clear();
+            window.location.replace("login.html");
+        }
     };
 
+    // 3. UI VIEW SWITCHING
     const views = {
         login: document.getElementById('loginSection'),
         register: document.getElementById('createSection'),
         forgot: document.getElementById('forgotSection')
     };
+    
     const alerts = {
         loginErr: document.getElementById('loginError'),
         loginSuccess: document.getElementById('loginSuccess'),
@@ -25,98 +40,97 @@ document.addEventListener('DOMContentLoaded', () => {
         forgotErr: document.getElementById('forgotError')
     };
 
-    const loginEmailInput = document.getElementById('loginEmail');
-    const rememberMeCheckbox = document.getElementById('rememberMe');
-    const savedEmail = localStorage.getItem('rememberedEmail');
-
-    if (savedEmail) {
-        loginEmailInput.value = savedEmail;
-        rememberMeCheckbox.checked = true;
-    }
-
     const showView = (target) => {
-        Object.values(views).forEach(v => v.classList.add('hidden'));
-        Object.values(alerts).forEach(a => a.classList.add('hidden'));
-        views[target].classList.remove('hidden');
+        Object.values(views).forEach(v => v?.classList.add('hidden'));
+        Object.values(alerts).forEach(a => a?.classList.add('hidden'));
+        views[target]?.classList.remove('hidden');
     };
 
     const showAlert = (container, msg) => {
-        container.querySelector('.error-msg-text').textContent = msg;
+        if (!container) return;
+        const textSpan = container.querySelector('.error-msg-text');
+        if (textSpan) textSpan.textContent = msg;
         container.classList.remove('hidden');
         setTimeout(() => container.classList.add('hidden'), 3000);
     };
 
-    document.getElementById('toggleShowPass').addEventListener('change', function() {
-        const type = this.checked ? 'text' : 'password';
-        document.querySelectorAll('.toggle-pass').forEach(input => input.type = type);
+    // --- VIEW NAVIGATION EVENTS ---
+    document.getElementById('showCreateBtn')?.addEventListener('click', () => showView('register'));
+    document.getElementById('showLoginBtn')?.addEventListener('click', () => showView('login'));
+    document.getElementById('forgotPassLink')?.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        showView('forgot'); 
     });
+    document.getElementById('backFromForgotBtn')?.addEventListener('click', () => showView('login'));
 
-    document.getElementById('showCreateBtn').onclick = () => showView('register');
-    document.getElementById('showLoginBtn').onclick = () => showView('login');
-    document.getElementById('forgotPassLink').onclick = (e) => { e.preventDefault(); showView('forgot'); };
-    document.getElementById('backFromForgotBtn').onclick = () => showView('login');
+    // 4. FORM SUBMISSIONS
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const fd = new FormData();
+            fd.append('action', 'login');
+            fd.append('email', document.getElementById('loginEmail').value);
+            fd.append('password', document.getElementById('loginPassword').value);
 
-document.getElementById('loginForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const fd = new FormData();
-        fd.append('action', 'login');
-        fd.append('email', document.getElementById('loginEmail').value);
-        fd.append('password', document.getElementById('loginPassword').value);
+            const res = await fetch('database.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            
+            if (data.status === 'success') {
+                sessionStorage.setItem('userRole', data.role);
+                sessionStorage.setItem('firstName', data.firstName);
+                window.location.replace(data.role === 'admin' ? "admin.html" : "home.html");
+            } else {
+                showAlert(alerts.loginErr, data.message);
+            }
+        };
+    }
 
-        const res = await fetch('database.php', { method: 'POST', body: fd });
-        const data = await res.json();
-        if (data.status === 'success') {
-            sessionStorage.setItem('userRole', data.role);
-            sessionStorage.setItem('firstName', data.firstName);
-            window.location.href = data.role === 'admin' ? "admin.html" : "home.html";
-        } else showAlert(alerts.loginErr, data.message);
-    };
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const fd = new FormData();
+            fd.append('action', 'register');
+            fd.append('fullName', document.getElementById('regFullName').value);
+            fd.append('phone', document.getElementById('regPhone').value);
+            fd.append('email', document.getElementById('regEmail').value);
+            fd.append('password', document.getElementById('regPassword').value);
 
-    document.getElementById('registerForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const fd = new FormData();
-        fd.append('action', 'register');
-        fd.append('fullName', document.getElementById('regFullName').value);
-        fd.append('phone', document.getElementById('regPhone').value);
-        fd.append('email', document.getElementById('regEmail').value);
-        fd.append('password', document.getElementById('regPassword').value);
+            const res = await fetch('database.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.status === 'success') {
+                showView('login');
+                showAlert(alerts.loginSuccess, data.message);
+            } else {
+                showAlert(alerts.regErr, data.message);
+            }
+        };
+    }
 
-        const res = await fetch('database.php', { method: 'POST', body: fd });
-        const data = await res.json();
-        if (data.status === 'success') {
-            showView('login');
-            showAlert(alerts.loginSuccess, data.message);
-        } else showAlert(alerts.regErr, data.message);
-    };
+    const forgotForm = document.getElementById('forgotForm');
+    if (forgotForm) {
+        forgotForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const fd = new FormData();
+            fd.append('action', 'reset');
+            fd.append('email', document.getElementById('resetEmail').value);
+            fd.append('password', document.getElementById('newPassword').value);
 
-    document.getElementById('forgotForm').onsubmit = async (e) => {
-        e.preventDefault();
-        const fd = new FormData();
-        fd.append('action', 'reset');
-        fd.append('email', document.getElementById('resetEmail').value);
-        fd.append('password', document.getElementById('newPassword').value);
+            const res = await fetch('database.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.status === 'success') {
+                showView('login');
+                showAlert(alerts.loginSuccess, "Password Updated Successfully!");
+            } else {
+                showAlert(alerts.forgotErr, data.message);
+            }
+        };
+    }
 
-        const res = await fetch('database.php', { method: 'POST', body: fd });
-        const data = await res.json();
-        if (data.status === 'success') {
-            showView('login');
-            showAlert(alerts.loginSuccess, "Password Updated Successfully!");
-        } else showAlert(alerts.forgotErr, data.message);
-    };
-    
-    function logoutUser() {
-    fetch('your_backend_filename.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'action=logout'
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === 'success') {
-            // .replace() destroys the current history state, preventing backwards tracking
-            window.location.replace('login.php'); 
-        }
-    });
-}
-
+    // 5. THE BACK-BUTTON TRAP
+// Forces the browser to re-check the Gatekeeper script on back/forward actions
+window.onpopstate = function() {
+    location.reload();
+};
 });
