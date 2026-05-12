@@ -42,19 +42,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 2. RENDER MENU ---
     function renderMenu(category, searchTerm = '') {
-        menuGrid.innerHTML = '';
+        // 1. CLEAR THE GRID COMPLETELY
+        menuGrid.innerHTML = ''; 
+        
         const noResults = document.getElementById('no-results');
+        
+        // 2. FILTER DATA
         const filtered = menuData.filter(item => {
             const matchesCat    = category === 'all' || item.category.toLowerCase() === category.toLowerCase();
             const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
             return matchesCat && matchesSearch;
         });
 
+        // 3. HANDLE NO RESULTS
         if (filtered.length === 0) {
             noResults.classList.remove('hidden');
+            return; // Exit early if no items
         } else {
             noResults.classList.add('hidden');
         }
+
+        // 4. USE A DOCUMENT FRAGMENT (Performance Best Practice)
+        const fragment = document.createDocumentFragment();
 
         filtered.forEach(item => {
             const card = document.createElement('div');
@@ -70,10 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="modal-add-cart-btn add-to-cart-btn" data-id="${item.id}">Add to Cart</button>
                 </div>
             `;
-            menuGrid.appendChild(card);
+            fragment.appendChild(card);
         });
 
-        // FIX: use a distinct class so we don't accidentally rebind modal buttons
+        menuGrid.appendChild(fragment);
+
+        // 5. RE-BIND BUTTONS
         document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
             btn.onclick = (e) => {
                 e.stopPropagation();
