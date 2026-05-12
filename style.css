@@ -327,19 +327,6 @@ html, body {
     width: 100%;
 }
 
-/* --- Cart Icon --- */
-.home-page .cart-container {
-    position: absolute;
-    right: 5%;
-}
-
-.home-page .cart-icon {
-    font-size: 1.8rem;
-    color: #ffffff;
-    cursor: pointer;
-    /* Makes icon float too */
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-}
 
 /* --- Main Typography --- */
 .home-page .hero-text {
