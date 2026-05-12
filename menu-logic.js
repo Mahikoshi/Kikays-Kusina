@@ -1,69 +1,84 @@
 document.addEventListener('DOMContentLoaded', () => {
     let menuData = [];
     let cart = [];
+    let currentFulfillment = 'delivery'; // FIX: moved to top of scope so all functions can access it
 
     // --- DOM ELEMENTS ---
-    const menuGrid = document.getElementById('menu-grid');
-    const categoryBtns = document.querySelectorAll('.cat-btn');
-    const searchInput = document.getElementById('search-input');
-    const cartContainer = document.getElementById('cart-items');
-    const subtotalEl = document.getElementById('subtotal');
-    const totalEl = document.getElementById('total');
+    const menuGrid       = document.getElementById('menu-grid');
+    const categoryBtns   = document.querySelectorAll('.cat-btn');
+    const searchInput    = document.getElementById('search-input');
+    const cartContainer  = document.getElementById('cart-items');
+    const subtotalEl     = document.getElementById('subtotal');
+    const totalEl        = document.getElementById('total');
 
     // --- ADDRESS ELEMENTS ---
-    const addressModal = document.getElementById('address-modal');
-    const addAddressBtn = document.getElementById('add-address-btn');
-    const saveAddressBtn = document.getElementById('save-address-btn');
-    const addressInput = document.getElementById('address-input');
-    const addressDisplay = document.getElementById('address-display');
-    const addressText = document.getElementById('address-text');
-    const editAddressBtn = document.getElementById('edit-address-btn');
-    const removeAddressBtn = document.getElementById('remove-address-btn');
+    const addressModal    = document.getElementById('address-modal');
+    const addAddressBtn   = document.getElementById('add-address-btn');
+    const saveAddressBtn  = document.getElementById('save-address-btn');
+    const addressInput    = document.getElementById('address-input');
+    const addressDisplay  = document.getElementById('address-display');
+    const addressText     = document.getElementById('address-text');
+    const editAddressBtn  = document.getElementById('edit-address-btn');
+    const removeAddressBtn= document.getElementById('remove-address-btn');
 
     // --- CHECKOUT ELEMENTS ---
-    const checkoutModal = document.getElementById('checkout-modal');
-    const checkoutItemsList = document.getElementById('checkout-items-list');
-    const checkoutTotal = document.getElementById('checkout-total');
-    const paymentBtns = document.querySelectorAll('.payment-option-btn');
-    const uploadSection = document.getElementById('gcash-upload-section');
+    // FIX: correctly references the checkout-modal wrapper that now exists in menu.html
+    const checkoutModal    = document.getElementById('checkout-modal');
+    const checkoutItemsList= document.getElementById('checkout-items-list');
+    const checkoutTotal    = document.getElementById('checkout-total');
 
-    // --- 1. FETCH DATA ---
+    // FIX: only target payment method buttons (gcash/cod), not fulfillment buttons
+    const paymentMethodBtns = document.querySelectorAll('#gcash-btn, #cod-btn');
+    const uploadSection     = document.getElementById('gcash-upload-section');
+
+    // --- 1. FETCH MENU DATA ---
     fetch('menu.php')
         .then(res => res.json())
         .then(data => {
             menuData = data;
-            renderMenu('pork'); 
+            renderMenu('pork');
         })
         .catch(err => console.error("Fetch Error:", err));
 
     // --- 2. RENDER MENU ---
     function renderMenu(category, searchTerm = '') {
         menuGrid.innerHTML = '';
+        const noResults = document.getElementById('no-results');
         const filtered = menuData.filter(item => {
-            const matchesCat = category === 'all' || item.category.toLowerCase() === category.toLowerCase();
+            const matchesCat    = category === 'all' || item.category.toLowerCase() === category.toLowerCase();
             const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
             return matchesCat && matchesSearch;
         });
+
+        if (filtered.length === 0) {
+            noResults.classList.remove('hidden');
+        } else {
+            noResults.classList.add('hidden');
+        }
 
         filtered.forEach(item => {
             const card = document.createElement('div');
             card.className = 'menu-card';
             card.innerHTML = `
                 <div class="menu-card-img-wrap">
-                    <img src="${item.image_url}" class="menu-card-img" alt="${item.name}">
+                    <img src="${item.image_url}" class="menu-card-img" alt="${item.name}" onerror="this.src='https://images.pexels.com/photos/2092906/pexels-photo-2092906.jpeg'">
                 </div>
                 <div class="menu-card-body">
                     <h3 class="menu-card-name">${item.name}</h3>
                     <p class="menu-card-desc">${item.description}</p>
                     <p class="menu-card-price">₱${parseFloat(item.price || 0).toFixed(2)}</p>
-                    <button class="modal-add-cart-btn" data-id="${item.id}">Add to Cart</button>
+                    <button class="modal-add-cart-btn add-to-cart-btn" data-id="${item.id}">Add to Cart</button>
                 </div>
             `;
             menuGrid.appendChild(card);
         });
 
-        document.querySelectorAll('.modal-add-cart-btn').forEach(btn => {
-            btn.onclick = () => addToCart(btn.getAttribute('data-id'));
+        // FIX: use a distinct class so we don't accidentally rebind modal buttons
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                addToCart(btn.getAttribute('data-id'));
+            };
         });
     }
 
@@ -71,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function addToCart(id) {
         const item = menuData.find(i => i.id == id);
         if (!item) return;
-
         const existing = cart.find(c => c.id == id);
         if (existing) {
             existing.qty++;
@@ -85,10 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
         cartContainer.innerHTML = '';
         let currentTotal = 0;
 
+        if (cart.length === 0) {
+            cartContainer.innerHTML = '<p class="empty-cart-msg">Your cart is empty</p>';
+        }
+
         cart.forEach(item => {
             const itemTotal = item.price * item.qty;
             currentTotal += itemTotal;
-            
             const div = document.createElement('div');
             div.className = 'cart-item';
             div.innerHTML = `
@@ -107,8 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formatted = `₱${currentTotal.toFixed(2)}`;
         subtotalEl.innerText = formatted;
-        totalEl.innerText = formatted;
-        if(checkoutTotal) checkoutTotal.innerText = formatted;
+        totalEl.innerText    = formatted;
+        if (checkoutTotal) checkoutTotal.innerText = formatted;
     }
 
     window.updateQty = (id, change) => {
@@ -158,62 +175,83 @@ document.addEventListener('DOMContentLoaded', () => {
             row.innerHTML = `<span>${item.qty}x ${item.name}</span><span>₱${(item.price * item.qty).toFixed(2)}</span>`;
             checkoutItemsList.appendChild(row);
         });
-        checkoutTotal.innerText = totalEl.innerText;
+        if (checkoutTotal) checkoutTotal.innerText = totalEl.innerText;
     }
 
     document.getElementById('checkout-btn').onclick = () => {
-        if (cart.length === 0) return alert("Cart is empty!");
+        if (cart.length === 0) return alert("Your cart is empty!");
         syncCheckoutList();
         checkoutModal.classList.remove('hidden');
     };
 
-    paymentBtns.forEach(btn => {
+    // FIX: payment method toggle (gcash / cod only)
+    paymentMethodBtns.forEach(btn => {
         btn.onclick = () => {
-            paymentBtns.forEach(b => b.classList.remove('active'));
+            paymentMethodBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             uploadSection.classList.toggle('hidden', btn.dataset.method !== 'gcash');
         };
     });
 
-    // THE ACTUAL PLACE ORDER LOGIC
+    // FIX: GCash proof image preview
+    const proofInput   = document.getElementById('gcash-proof-input');
+    const proofPreview = document.getElementById('proof-preview');
+    const uploadLabel  = document.getElementById('upload-label-text');
+
+    proofInput.addEventListener('change', () => {
+        const file = proofInput.files[0];
+        if (file) {
+            uploadLabel.textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                proofPreview.src = e.target.result;
+                proofPreview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // PLACE ORDER
     document.getElementById('place-order-btn').onclick = async () => {
-        const activePayment = document.querySelector('.payment-option-btn.active');
+        const activePayment  = document.querySelector('#gcash-btn.active, #cod-btn.active');
         const fulfillmentTime = document.getElementById('fulfillment-time').value;
 
-        // Basic Validation
         if (!fulfillmentTime) return alert("Please select a date and time!");
-        if (currentFulfillment === 'delivery' && addressText.innerText === '') {
+        if (currentFulfillment === 'delivery' && addressText.innerText.trim() === '') {
             return alert("Please add a delivery address!");
         }
+        if (!activePayment) return alert("Please select a payment method!");
 
         const fd = new FormData();
         fd.append('action', 'place_order');
-        fd.append('total', totalEl.innerText.replace('₱', ''));
+        fd.append('total', totalEl.innerText.replace('₱', '').replace(/,/g, ''));
         fd.append('method', activePayment.dataset.method);
         fd.append('fulfillment_type', currentFulfillment);
         fd.append('fulfillment_time', fulfillmentTime);
-        
-        // Convert cart to a readable string for the database
+
         const itemsString = cart.map(i => `${i.qty}x ${i.name}`).join(', ');
         fd.append('items', itemsString);
 
-        // Append GCash Proof if it exists
-        const proofFile = document.getElementById('gcash-proof-input').files[0];
+        const proofFile = proofInput.files[0];
         if (activePayment.dataset.method === 'gcash' && proofFile) {
             fd.append('proof', proofFile);
         }
 
         try {
-            const res = await fetch('database.php', { method: 'POST', body: fd });
+            const res  = await fetch('database.php', { method: 'POST', body: fd });
             const data = await res.json();
-            
+
             if (data.status === 'success') {
                 checkoutModal.classList.add('hidden');
                 document.getElementById('success-modal').classList.remove('hidden');
-                cart = []; // Clear Cart on Success
+                cart = [];
                 updateCartUI();
+                // Reset proof input
+                proofInput.value = '';
+                proofPreview.classList.add('hidden');
+                uploadLabel.textContent = 'Click to upload screenshot';
             } else {
-                alert("Error: " + data.message);
+                alert("Error: " + (data.message || "Unknown error"));
             }
         } catch (err) {
             console.error("Order Error:", err);
@@ -221,8 +259,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // FIX: correctly references checkout-modal-close which now exists in menu.html
     document.getElementById('checkout-modal-close').onclick = () => checkoutModal.classList.add('hidden');
-    document.getElementById('success-close-btn').onclick = () => document.getElementById('success-modal').classList.add('hidden');
+    document.getElementById('success-close-btn').onclick   = () => document.getElementById('success-modal').classList.add('hidden');
+
+    document.getElementById('order-received-btn').onclick = () => {
+        document.getElementById('order-status-badge').className = 'status-badge received';
+        document.getElementById('order-status-badge').textContent = 'Received';
+        document.getElementById('order-received-btn').disabled = true;
+    };
 
     // --- 6. NAV & SEARCH ---
     searchInput.addEventListener('input', (e) => {
@@ -234,25 +279,27 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.onclick = () => {
             categoryBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            document.getElementById('category-title').textContent =
+                btn.textContent.trim().replace(/^\S+\s*/, ''); // strip emoji
             renderMenu(btn.dataset.cat, searchInput.value);
         };
     });
 
-    // Dynamic Greeting
+    // --- 7. DYNAMIC GREETING ---
     const firstName = sessionStorage.getItem('firstName') || "User";
     document.getElementById('user-name').textContent = firstName;
 
-    // Fulfillment Toggle Logic
-    let currentFulfillment = 'delivery';
+    // --- 8. FULFILLMENT TOGGLE ---
+    // FIX: uses module-level currentFulfillment variable
     window.toggleFulfillment = (method) => {
         currentFulfillment = method;
         const addrSection = document.querySelector('.address-section');
-        const label = document.getElementById('schedule-label');
-        
-        document.getElementById('delivery-btn').classList.toggle('active', method === 'delivery');
-        document.getElementById('pickup-btn').classList.toggle('active', method === 'pickup');
+        const label       = document.getElementById('schedule-label');
 
-        if(method === 'pickup') {
+        document.getElementById('delivery-btn').classList.toggle('active', method === 'delivery');
+        document.getElementById('pickup-btn').classList.toggle('active',  method === 'pickup');
+
+        if (method === 'pickup') {
             addrSection.classList.add('hidden');
             label.textContent = "Pickup Date & Time";
         } else {
