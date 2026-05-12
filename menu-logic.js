@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     let menuData = [];
     let cart = [];
-    let currentFulfillment = 'delivery'; // FIX: moved to top of scope so all functions can access it
+    let currentFulfillment = 'delivery'; 
 
     // --- DOM ELEMENTS ---
     const menuGrid       = document.getElementById('menu-grid');
@@ -22,12 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const removeAddressBtn= document.getElementById('remove-address-btn');
 
     // --- CHECKOUT ELEMENTS ---
-    // FIX: correctly references the checkout-modal wrapper that now exists in menu.html
     const checkoutModal    = document.getElementById('checkout-modal');
     const checkoutItemsList= document.getElementById('checkout-items-list');
     const checkoutTotal    = document.getElementById('checkout-total');
-
-    // FIX: only target payment method buttons (gcash/cod), not fulfillment buttons
     const paymentMethodBtns = document.querySelectorAll('#gcash-btn, #cod-btn');
     const uploadSection     = document.getElementById('gcash-upload-section');
 
@@ -40,58 +37,55 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(err => console.error("Fetch Error:", err));
 
+
     // --- 2. RENDER MENU ---
-    function renderMenu(category, searchTerm = '') {
-        // 1. CLEAR THE GRID COMPLETELY
-        menuGrid.innerHTML = ''; 
-        
-        const noResults = document.getElementById('no-results');
-        
-        // 2. FILTER DATA
-        const filtered = menuData.filter(item => {
-            const matchesCat    = category === 'all' || item.category.toLowerCase() === category.toLowerCase();
-            const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-            return matchesCat && matchesSearch;
-        });
-
-        // 3. HANDLE NO RESULTS
-        if (filtered.length === 0) {
-            noResults.classList.remove('hidden');
-            return; // Exit early if no items
-        } else {
-            noResults.classList.add('hidden');
-        }
-
-        // 4. USE A DOCUMENT FRAGMENT (Performance Best Practice)
-        const fragment = document.createDocumentFragment();
-
-        filtered.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'menu-card';
-            card.innerHTML = `
-                <div class="menu-card-img-wrap">
-                    <img src="${item.image_url}" class="menu-card-img" alt="${item.name}" onerror="this.src='https://images.pexels.com/photos/2092906/pexels-photo-2092906.jpeg'">
-                </div>
-                <div class="menu-card-body">
-                    <h3 class="menu-card-name">${item.name}</h3>
-                    <p class="menu-card-desc">${item.description}</p>
-                    <p class="menu-card-price">₱${parseFloat(item.price || 0).toFixed(2)}</p>
-                    <button class="modal-add-cart-btn add-to-cart-btn" data-id="${item.id}">Add to Cart</button>
-                </div>
-            `;
-            fragment.appendChild(card);
-        });
-
-        menuGrid.appendChild(fragment);
-
-        // 5. RE-BIND BUTTONS
-        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                addToCart(btn.getAttribute('data-id'));
-            };
-        });
+function renderMenu(category, searchTerm = '') {
+    const menuGrid = document.getElementById('menu-grid');
+    
+    // 1. CRITICAL: Clear the grid completely before adding anything
+    while (menuGrid.firstChild) {
+        menuGrid.removeChild(menuGrid.firstChild);
     }
+    
+    const noResults = document.getElementById('no-results');
+    const filtered = menuData.filter(item => {
+        const matchesCat = category === 'all' || item.category.toLowerCase() === category.toLowerCase();
+        const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesCat && matchesSearch;
+    });
+
+    if (filtered.length === 0) {
+        noResults.classList.remove('hidden');
+        return;
+    } else {
+        noResults.classList.add('hidden');
+    }
+
+    // 2. Use a Fragment to batch the update (Prevents UI flickering/doubling)
+    const fragment = document.createDocumentFragment();
+
+    filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'menu-card';
+        card.innerHTML = `
+            <div class="menu-card-img-wrap">
+                <img src="${item.image_url}" class="menu-card-img" alt="${item.name}" onerror="this.src='https://images.pexels.com/photos/2092906/pexels-photo-2092906.jpeg'">
+            </div>
+            <div class="modal-add-cart-btn add-to-cart-btn" data-id="${item.id}">Add to Cart</div>
+        `;
+        fragment.appendChild(card);
+    });
+
+    menuGrid.appendChild(fragment);
+
+    // 3. Re-bind cart buttons
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            addToCart(btn.getAttribute('data-id'));
+        };
+    });
+}
 
     // --- 3. CART LOGIC ---
     function addToCart(id) {
@@ -195,7 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
         checkoutModal.classList.remove('hidden');
     };
 
-    // FIX: payment method toggle (gcash / cod only)
     paymentMethodBtns.forEach(btn => {
         btn.onclick = () => {
             paymentMethodBtns.forEach(b => b.classList.remove('active'));
@@ -257,7 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('success-modal').classList.remove('hidden');
                 cart = [];
                 updateCartUI();
-                // Reset proof input
                 proofInput.value = '';
                 proofPreview.classList.add('hidden');
                 uploadLabel.textContent = 'Click to upload screenshot';
@@ -270,7 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // FIX: correctly references checkout-modal-close which now exists in menu.html
     document.getElementById('checkout-modal-close').onclick = () => checkoutModal.classList.add('hidden');
     document.getElementById('success-close-btn').onclick   = () => document.getElementById('success-modal').classList.add('hidden');
 
@@ -291,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
             categoryBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById('category-title').textContent =
-                btn.textContent.trim().replace(/^\S+\s*/, ''); // strip emoji
+                btn.textContent.trim().replace(/^\S+\s*/, ''); 
             renderMenu(btn.dataset.cat, searchInput.value);
         };
     });
@@ -301,7 +292,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('user-name').textContent = firstName;
 
     // --- 8. FULFILLMENT TOGGLE ---
-    // FIX: uses module-level currentFulfillment variable
     window.toggleFulfillment = (method) => {
         currentFulfillment = method;
         const addrSection = document.querySelector('.address-section');
