@@ -1,89 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard | Ordering System</title>
-    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="style.css" />
 </head>
+
 <body class="admin-page">
 
-    <div class="sidebar">
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+    <aside class="sidebar">
+
         <div class="logo">
             <h2>AdminPanel</h2>
         </div>
-        <nav>
+
+        <nav class="sidebar-nav">
             <a href="#" class="active">Orders</a>
             <a href="#">Inventory</a>
             <a href="#">Customers</a>
             <a href="#">Analytics</a>
             <a href="#">Settings</a>
         </nav>
-    </div>
 
-    <div class="main-content">
-        <header>
-            <h1>Order Management</h1>
-            <div class="user-profile">
-                <span>Admin User</span>
-                <a href="javascript:void(0)" onclick="handleLogout()" class="logout-btn">Logout</a>
+    </aside>
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+    <main class="main-content">
+
+        <!-- HEADER -->
+        <header class="dashboard-header">
+
+            <div class="header-left">
+                <h1>Order Management</h1>
             </div>
+
+            <div class="user-profile">
+                <span class="admin-name">Admin User</span>
+
+                <button
+                    type="button"
+                    class="logout-btn"
+                    onclick="handleLogout()"
+                >
+                    Logout
+                </button>
+            </div>
+
         </header>
 
+        <!-- =========================
+             STATS SECTION
+        ========================== -->
         <section class="stats-grid">
+
             <div class="stat-card">
                 <h3>Total Orders</h3>
-                <p>124</p>
+                <p id="totalOrders">0</p>
             </div>
+
             <div class="stat-card">
                 <h3>Pending</h3>
-                <p>12</p>
+                <p id="pendingOrders">0</p>
             </div>
+
             <div class="stat-card">
                 <h3>Revenue</h3>
-                <p>₱45,200</p>
+                <p id="totalRevenue">₱0.00</p>
             </div>
+
         </section>
 
+        <!-- =========================
+             ORDER TABLE SECTION
+        ========================== -->
         <section class="order-table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Items</th>
-                        <th>Total Price</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>#10025</td>
-                        <td>John Doe</td>
-                        <td>2x Burger, 1x Coke</td>
-                        <td>₱350.00</td>
-                        <td><span class="status pending">Pending</span></td>
-                        <td>
-                            <button class="btn edit">Update</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>#10024</td>
-                        <td>Jane Smith</td>
-                        <td>1x Pasta</td>
-                        <td>₱220.00</td>
-                        <td><span class="status completed">Completed</span></td>
-                        <td>
-                            <button class="btn edit">Update</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-    </div>
-</section>
 
-<script src="script.js"></script>
+            <div class="table-header">
+
+                <h2>Recent Orders</h2>
+
+                <div class="table-actions">
+
+                    <input
+                        type="text"
+                        id="searchOrders"
+                        placeholder="Search orders..."
+                    />
+
+                    <select id="filterStatus">
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="table-wrapper">
+
+                <table class="orders-table">
+
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Total Price</th>
+                            <th>Status</th>
+                            <th>Order Type</th>
+                            <th>Schedule</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <!-- 
+                        IMPORTANT:
+                        This tbody will be populated dynamically
+                        from the database using JavaScript.
+                    -->
+                    <tbody id="ordersTableBody">
+
+                        <!-- Example Dynamic Row -->
+                        <!--
+                        <tr>
+                            <td>#10025</td>
+                            <td>John Doe</td>
+                            <td>2x Burger, 1x Coke</td>
+                            <td>₱350.00</td>
+
+                            <td>
+                                <span class="status pending">
+                                    Pending
+                                </span>
+                            </td>
+
+                            <td>Delivery</td>
+
+                            <td>
+                                May 15, 2026 - 3:00 PM
+                            </td>
+
+                            <td class="action-buttons">
+                                <button class="btn update-btn">
+                                    Update
+                                </button>
+
+                                <button class="btn delete-btn">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                        -->
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+    <script src="script.js"></script>
+
 </body>
 </html>
