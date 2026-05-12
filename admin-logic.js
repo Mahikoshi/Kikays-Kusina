@@ -30,10 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         orders.forEach(order => {
             const tr = document.createElement('tr');
-            // matches 'customer_name' from the updated database.php JOIN
+            // UPDATED: Displays address under the customer name
             tr.innerHTML = `
                 <td>#${order.id}</td>
-                <td><strong>${order.customer_name}</strong></td>
+                <td>
+                    <strong>${order.customer_name}</strong><br>
+                    <small style="color: #666;">${order.address || 'No Address'}</small>
+                </td>
                 <td>${order.items}</td>
                 <td>₱${parseFloat(order.total).toFixed(2)}</td>
                 <td><span class="status-badge ${order.status.toLowerCase()}">${order.status}</span></td>
@@ -59,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('database.php', { method: 'POST', body: fd });
             const data = await res.json();
             if (data.status === 'success') {
-                loadOrders(); // Refresh table and stats
+                loadOrders(); // Refresh table and stats automatically
             }
         } catch (err) {
             console.error("Update Error:", err);
@@ -86,7 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const filtered = allOrders.filter(order => {
             const matchesSearch = order.customer_name.toLowerCase().includes(searchTerm) || 
-                                 order.items.toLowerCase().includes(searchTerm);
+                                 order.items.toLowerCase().includes(searchTerm) ||
+                                 (order.address && order.address.toLowerCase().includes(searchTerm));
             const matchesStatus = statusValue === 'all' || order.status.toLowerCase() === statusValue;
             return matchesSearch && matchesStatus;
         });
@@ -101,9 +105,13 @@ document.addEventListener('DOMContentLoaded', () => {
     window.handleLogout = async () => {
         const fd = new FormData();
         fd.append('action', 'logout');
+        
+        // Server-side session destruction
         await fetch('database.php', { method: 'POST', body: fd });
+        
+        // Client-side cleanup
         sessionStorage.clear();
-        window.location.replace('login.html'); // Prevents back-button tracking
+        window.location.replace('login.html'); 
     };
 
     // Initial load

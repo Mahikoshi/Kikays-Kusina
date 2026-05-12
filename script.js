@@ -128,9 +128,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // 5. THE BACK-BUTTON TRAP
-// Forces the browser to re-check the Gatekeeper script on back/forward actions
 window.onpopstate = function() {
-    location.reload();
+    if (sessionStorage.getItem('userRole')) {
+        location.reload();
+    }
 };
 });

@@ -84,8 +84,8 @@ if ($action === 'place_order') {
         move_uploaded_file($_FILES['proof']['tmp_name'], $proofPath);
     }
 
-    // Matches the SQL schema: user_id, items, total, method, proof, fulfillment_type, fulfillment_time
-    $stmt = $pdo->prepare("INSERT INTO orders (user_id, items, total, method, proof, fulfillment_type, fulfillment_time, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')");
+    // UPDATED: Now includes 'address' in the INSERT statement
+    $stmt = $pdo->prepare("INSERT INTO orders (user_id, items, total, method, proof, fulfillment_type, fulfillment_time, address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending')");
     $stmt->execute([
         $_SESSION['user_id'], 
         $_POST['items'], 
@@ -93,7 +93,8 @@ if ($action === 'place_order') {
         $_POST['method'], 
         $proofPath,
         $_POST['fulfillment_type'],
-        $_POST['fulfillment_time']
+        $_POST['fulfillment_time'],
+        $_POST['address'] // Captured from menu-logic.js
     ]);
     echo json_encode(["status" => "success"]);
 }
@@ -125,9 +126,17 @@ if ($action === 'update_order_status') {
     echo json_encode(["status" => "success", "message" => "Status updated to " . $_POST['status']]);
 }
 
-// --- 5. LOGOUT ---
+// --- 5. LOGOUT (UPDATED FOR BETTER SECURITY) ---
 if ($action === 'logout') {
-    session_unset();
+    // Completely clear and destroy the session
+    $_SESSION = array();
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params["path"], $params["domain"],
+            $params["secure"], $params["httponly"]
+        );
+    }
     session_destroy();
     echo json_encode(["status" => "success"]);
 }

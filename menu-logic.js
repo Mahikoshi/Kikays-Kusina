@@ -37,55 +37,52 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(err => console.error("Fetch Error:", err));
 
-
     // --- 2. RENDER MENU ---
-function renderMenu(category, searchTerm = '') {
-    const menuGrid = document.getElementById('menu-grid');
-    
-    // 1. CRITICAL: Clear the grid completely before adding anything
-    while (menuGrid.firstChild) {
-        menuGrid.removeChild(menuGrid.firstChild);
+    function renderMenu(category, searchTerm = '') {
+        menuGrid.innerHTML = ''; 
+        while (menuGrid.firstChild) {
+            menuGrid.removeChild(menuGrid.firstChild);
+        }
+        const noResults = document.getElementById('no-results');
+        const filtered = menuData.filter(item => {
+            const matchesCat = category === 'all' || item.category.toLowerCase() === category.toLowerCase();
+            const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+            return matchesCat && matchesSearch;
+        });
+
+        if (filtered.length === 0) {
+            if (noResults) noResults.classList.remove('hidden');
+            return;
+        } else {
+            if (noResults) noResults.classList.add('hidden');
+        }
+
+        const fragment = document.createDocumentFragment();
+        filtered.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'menu-card';
+            card.innerHTML = `
+                <div class="menu-card-img-wrap">
+                    <img src="${item.image_url}" class="menu-card-img" alt="${item.name}" onerror="this.src='https://images.pexels.com/photos/2092906/pexels-photo-2092906.jpeg'">
+                </div>
+                <div class="menu-card-body">
+                    <h3 class="menu-card-name">${item.name}</h3>
+                    <p class="menu-card-desc">${item.description}</p>
+                    <p class="menu-card-price">₱${parseFloat(item.price || 0).toFixed(2)}</p>
+                    <button class="modal-add-cart-btn add-to-cart-btn" data-id="${item.id}">Add to Cart</button>
+                </div>
+            `;
+            fragment.appendChild(card);
+        });
+        menuGrid.appendChild(fragment);
+
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                addToCart(btn.getAttribute('data-id'));
+            };
+        });
     }
-    
-    const noResults = document.getElementById('no-results');
-    const filtered = menuData.filter(item => {
-        const matchesCat = category === 'all' || item.category.toLowerCase() === category.toLowerCase();
-        const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesCat && matchesSearch;
-    });
-
-    if (filtered.length === 0) {
-        noResults.classList.remove('hidden');
-        return;
-    } else {
-        noResults.classList.add('hidden');
-    }
-
-    // 2. Use a Fragment to batch the update (Prevents UI flickering/doubling)
-    const fragment = document.createDocumentFragment();
-
-    filtered.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'menu-card';
-        card.innerHTML = `
-            <div class="menu-card-img-wrap">
-                <img src="${item.image_url}" class="menu-card-img" alt="${item.name}" onerror="this.src='https://images.pexels.com/photos/2092906/pexels-photo-2092906.jpeg'">
-            </div>
-            <div class="modal-add-cart-btn add-to-cart-btn" data-id="${item.id}">Add to Cart</div>
-        `;
-        fragment.appendChild(card);
-    });
-
-    menuGrid.appendChild(fragment);
-
-    // 3. Re-bind cart buttons
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.onclick = (e) => {
-            e.stopPropagation();
-            addToCart(btn.getAttribute('data-id'));
-        };
-    });
-}
 
     // --- 3. CART LOGIC ---
     function addToCart(id) {
@@ -103,11 +100,9 @@ function renderMenu(category, searchTerm = '') {
     function updateCartUI() {
         cartContainer.innerHTML = '';
         let currentTotal = 0;
-
         if (cart.length === 0) {
             cartContainer.innerHTML = '<p class="empty-cart-msg">Your cart is empty</p>';
         }
-
         cart.forEach(item => {
             const itemTotal = item.price * item.qty;
             currentTotal += itemTotal;
@@ -126,7 +121,6 @@ function renderMenu(category, searchTerm = '') {
             `;
             cartContainer.appendChild(div);
         });
-
         const formatted = `₱${currentTotal.toFixed(2)}`;
         subtotalEl.innerText = formatted;
         totalEl.innerText    = formatted;
@@ -143,8 +137,11 @@ function renderMenu(category, searchTerm = '') {
         }
     };
 
-    // --- 4. ADDRESS LOGIC ---
-    addAddressBtn.onclick = () => addressModal.classList.remove('hidden');
+    // --- 4. ADDRESS LOGIC (UPDATED WITH EDIT/DELETE) ---
+    addAddressBtn.onclick = () => {
+        addressInput.value = '';
+        addressModal.classList.remove('hidden');
+    };
 
     saveAddressBtn.onclick = (e) => {
         e.preventDefault();
@@ -197,7 +194,6 @@ function renderMenu(category, searchTerm = '') {
         };
     });
 
-    // FIX: GCash proof image preview
     const proofInput   = document.getElementById('gcash-proof-input');
     const proofPreview = document.getElementById('proof-preview');
     const uploadLabel  = document.getElementById('upload-label-text');
@@ -215,13 +211,13 @@ function renderMenu(category, searchTerm = '') {
         }
     });
 
-    // PLACE ORDER
     document.getElementById('place-order-btn').onclick = async () => {
         const activePayment  = document.querySelector('#gcash-btn.active, #cod-btn.active');
         const fulfillmentTime = document.getElementById('fulfillment-time').value;
+        const currentAddress = addressText.innerText.trim();
 
         if (!fulfillmentTime) return alert("Please select a date and time!");
-        if (currentFulfillment === 'delivery' && addressText.innerText.trim() === '') {
+        if (currentFulfillment === 'delivery' && currentAddress === '') {
             return alert("Please add a delivery address!");
         }
         if (!activePayment) return alert("Please select a payment method!");
@@ -232,6 +228,8 @@ function renderMenu(category, searchTerm = '') {
         fd.append('method', activePayment.dataset.method);
         fd.append('fulfillment_type', currentFulfillment);
         fd.append('fulfillment_time', fulfillmentTime);
+        // Include Address in form data
+        fd.append('address', currentFulfillment === 'delivery' ? currentAddress : 'Pickup Order');
 
         const itemsString = cart.map(i => `${i.qty}x ${i.name}`).join(', ');
         fd.append('items', itemsString);
@@ -271,18 +269,27 @@ function renderMenu(category, searchTerm = '') {
         document.getElementById('order-received-btn').disabled = true;
     };
 
-    // --- 6. NAV & SEARCH ---
-    searchInput.addEventListener('input', (e) => {
+// --- 6. NAV & SEARCH (FIXED INITIALIZATION) ---
+    const getActiveCat = () => {
         const activeBtn = document.querySelector('.cat-btn.active');
-        renderMenu(activeBtn ? activeBtn.dataset.cat : 'pork', e.target.value);
+        return activeBtn ? activeBtn.dataset.cat : 'all';
+    };
+
+    searchInput.addEventListener('input', (e) => {
+        renderMenu(getActiveCat(), e.target.value);
     });
 
     categoryBtns.forEach(btn => {
         btn.onclick = () => {
             categoryBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            document.getElementById('category-title').textContent =
-                btn.textContent.trim().replace(/^\S+\s*/, ''); 
+            
+            const categoryTitle = document.getElementById('category-title');
+            if (categoryTitle) {
+                // Strips emojis for the title
+                categoryTitle.textContent = btn.textContent.trim().replace(/[^\x00-\x7F]/g, '').trim();
+            }
+            
             renderMenu(btn.dataset.cat, searchInput.value);
         };
     });
@@ -296,7 +303,6 @@ function renderMenu(category, searchTerm = '') {
         currentFulfillment = method;
         const addrSection = document.querySelector('.address-section');
         const label       = document.getElementById('schedule-label');
-
         document.getElementById('delivery-btn').classList.toggle('active', method === 'delivery');
         document.getElementById('pickup-btn').classList.toggle('active',  method === 'pickup');
 
