@@ -7,7 +7,7 @@ $dbname = "kikay's kusina";
 $username = "root"; 
 $password = ""; 
 
-// Centralized PDO Connection - Using PDO is best practice for security
+// Centralized PDO Connection
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -16,7 +16,6 @@ try {
     die(json_encode(["status" => "error", "message" => "Database Connection Failed"]));
 }
 
-// Get the action from POST
 $action = $_POST['action'] ?? '';
 
 // --- 1. USER AUTHENTICATION ---
@@ -28,8 +27,6 @@ if ($action === 'login') {
     if ($user) {
         $_SESSION['role'] = $user['role'];
         $_SESSION['user_id'] = $user['id'];
-        
-        // Dynamic greeting logic: handles cases where full_name might be NULL
         $fullName = $user['full_name'] ?? 'User';
         $nameParts = explode(' ', trim($fullName));
         $_SESSION['first_name'] = $nameParts[0]; 
@@ -44,9 +41,8 @@ if ($action === 'login') {
     }
 }
 
-// --- 2. REGISTRATION & ACCOUNT MGMT ---
-if ($action === 'register') {
-    // Automatically assigns 'user' role to new sign-ups
+// --- 2. REGISTRATION & RESET ---
+elseif ($action === 'register') {
     $stmt = $pdo->prepare("INSERT INTO users (full_name, phone, email, password, role) VALUES (?, ?, ?, ?, 'user')");
     try {
         $stmt->execute([$_POST['fullName'], $_POST['phone'], $_POST['email'], $_POST['password']]);
@@ -56,7 +52,7 @@ if ($action === 'register') {
     }
 }
 
-if ($action === 'reset') {
+elseif ($action === 'reset') {
     $email = $_POST['email'];
     $newPass = $_POST['password'];
     $check = $pdo->prepare("SELECT id FROM users WHERE email = ?");
@@ -71,71 +67,60 @@ if ($action === 'reset') {
 }
 
 // --- 3. ORDERING SYSTEM ACTIONS ---
-if ($action === 'place_order') {
+elseif ($action === 'place_order') {
     if (!isset($_SESSION['user_id'])) {
         die(json_encode(["status" => "error", "message" => "Session expired. Please login again."]));
     }
 
     $proofPath = "";
-    // Handle GCash file uploads securely
     if ($_POST['method'] === 'gcash' && isset($_FILES['proof'])) {
         $proofPath = "uploads/" . time() . "_" . $_FILES['proof']['name'];
         if (!is_dir('uploads')) mkdir('uploads', 0777, true);
         move_uploaded_file($_FILES['proof']['tmp_name'], $proofPath);
     }
 
-    // UPDATED: Now includes 'address' in the INSERT statement
-    $stmt = $pdo->prepare("INSERT INTO orders (user_id, items, total, method, proof, fulfillment_type, fulfillment_time, address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending')");
-    $stmt->execute([
-        $_SESSION['user_id'], 
-        $_POST['items'], 
-        $_POST['total'], 
-        $_POST['method'], 
-        $proofPath,
-        $_POST['fulfillment_type'],
-        $_POST['fulfillment_time'],
-        $_POST['address'] // Captured from menu-logic.js
-    ]);
-    echo json_encode(["status" => "success"]);
+    try {
+        $stmt = $pdo->prepare("INSERT INTO orders (user_id, items, total, method, proof, fulfillment_type, fulfillment_time, address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending')");
+        $stmt->execute([
+            $_SESSION['user_id'], 
+            $_POST['items'], 
+            $_POST['total'], 
+            $_POST['method'], 
+            $proofPath,
+            $_POST['fulfillment_type'],
+            $_POST['fulfillment_time'],
+            $_POST['address'] 
+        ]);
+        echo json_encode(["status" => "success"]);
+    } catch (Exception $e) {
+        echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+    }
 }
 
 // --- 4. ADMIN PANEL ACTIONS ---
-
-// Fetch all orders with customer names using a JOIN for better Information Management
-if ($action === 'get_admin_orders') {
+elseif ($action === 'get_admin_orders') {
     if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         die(json_encode(["status" => "error", "message" => "Unauthorized access."]));
     }
-
-    $stmt = $pdo->query("SELECT o.*, u.full_name as customer_name 
-                         FROM orders o 
-                         JOIN users u ON o.user_id = u.id 
-                         ORDER BY o.id DESC");
-    $orders = $stmt->fetchAll();
-    echo json_encode($orders);
+    $stmt = $pdo->query("SELECT o.*, u.full_name as customer_name FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.id DESC");
+    echo json_encode($stmt->fetchAll());
 }
 
-// Update order status: Admin can mark as 'Completed' or 'Cancelled'
-if ($action === 'update_order_status') {
+elseif ($action === 'update_order_status') {
     if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         die(json_encode(["status" => "error", "message" => "Unauthorized access."]));
     }
-
     $stmt = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
     $stmt->execute([$_POST['status'], $_POST['order_id']]);
     echo json_encode(["status" => "success", "message" => "Status updated to " . $_POST['status']]);
 }
 
-// --- 5. LOGOUT (UPDATED FOR BETTER SECURITY) ---
-if ($action === 'logout') {
-    // Completely clear and destroy the session
+// --- 5. LOGOUT ---
+elseif ($action === 'logout') {
     $_SESSION = array();
     if (ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000,
-            $params["path"], $params["domain"],
-            $params["secure"], $params["httponly"]
-        );
+        setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
     }
     session_destroy();
     echo json_encode(["status" => "success"]);

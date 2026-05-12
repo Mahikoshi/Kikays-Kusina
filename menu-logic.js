@@ -33,16 +33,18 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(res => res.json())
         .then(data => {
             menuData = data;
-            renderMenu('pork');
+            renderMenu('pork'); // Default starting category
         })
         .catch(err => console.error("Fetch Error:", err));
 
-    // --- 2. RENDER MENU ---
+    // --- 2. RENDER MENU (STRICT CLEARING) ---
     function renderMenu(category, searchTerm = '') {
+        // Clear grid completely to prevent doubling
         menuGrid.innerHTML = ''; 
         while (menuGrid.firstChild) {
             menuGrid.removeChild(menuGrid.firstChild);
         }
+
         const noResults = document.getElementById('no-results');
         const filtered = menuData.filter(item => {
             const matchesCat = category === 'all' || item.category.toLowerCase() === category.toLowerCase();
@@ -137,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- 4. ADDRESS LOGIC (UPDATED WITH EDIT/DELETE) ---
+    // --- 4. ADDRESS LOGIC ---
     addAddressBtn.onclick = () => {
         addressInput.value = '';
         addressModal.classList.remove('hidden');
@@ -228,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fd.append('method', activePayment.dataset.method);
         fd.append('fulfillment_type', currentFulfillment);
         fd.append('fulfillment_time', fulfillmentTime);
-        // Include Address in form data
         fd.append('address', currentFulfillment === 'delivery' ? currentAddress : 'Pickup Order');
 
         const itemsString = cart.map(i => `${i.qty}x ${i.name}`).join(', ');
@@ -263,13 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('checkout-modal-close').onclick = () => checkoutModal.classList.add('hidden');
     document.getElementById('success-close-btn').onclick   = () => document.getElementById('success-modal').classList.add('hidden');
 
-    document.getElementById('order-received-btn').onclick = () => {
-        document.getElementById('order-status-badge').className = 'status-badge received';
-        document.getElementById('order-status-badge').textContent = 'Received';
-        document.getElementById('order-received-btn').disabled = true;
-    };
-
-// --- 6. NAV & SEARCH (FIXED INITIALIZATION) ---
+    // --- 6. NAV & SEARCH ---
     const getActiveCat = () => {
         const activeBtn = document.querySelector('.cat-btn.active');
         return activeBtn ? activeBtn.dataset.cat : 'all';
@@ -283,16 +278,24 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.onclick = () => {
             categoryBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
             const categoryTitle = document.getElementById('category-title');
             if (categoryTitle) {
-                // Strips emojis for the title
                 categoryTitle.textContent = btn.textContent.trim().replace(/[^\x00-\x7F]/g, '').trim();
             }
-            
             renderMenu(btn.dataset.cat, searchInput.value);
         };
     });
+
+    // VIEW ALL LOGIC
+    const viewAllBtn = document.getElementById('view-all-btn');
+    if (viewAllBtn) {
+        viewAllBtn.onclick = () => {
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            const categoryTitle = document.getElementById('category-title');
+            if (categoryTitle) categoryTitle.textContent = "All Items";
+            renderMenu('all', searchInput.value);
+        };
+    }
 
     // --- 7. DYNAMIC GREETING ---
     const firstName = sessionStorage.getItem('firstName') || "User";
