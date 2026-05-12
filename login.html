@@ -7,14 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<script>
-    // Immediate Redirect: Kick out unauthorized users before the page loads
-    if (!sessionStorage.getItem('userRole')) {
-        window.location.replace("login.html");
-    }
-</script>
-
-<body class="login-page"> 
+<body class="login-page">
     <div class="main-container">
         <header class="header">
             <div class="logo-container"><img src="Pics/logo.jpg" alt="Logo" class="main-logo"></div>
@@ -80,12 +73,9 @@
         </main>
     </div>
     <script src="script.js"></script>
-        <!-- PLACE THE BACK-BUTTON TRAP HERE -->
     <script type="text/javascript">
-        // Injects a dummy state into the timeline history
+        // Trap back-button so users can't navigate back to login after logging out
         history.pushState(null, null, location.href);
-        
-        // Overrides the back browser actions
         window.onpopstate = function () {
             history.go(1);
         };

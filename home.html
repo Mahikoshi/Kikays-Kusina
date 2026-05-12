@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<script>
-    // Immediate Redirect: Kick out unauthorized users before the page loads
-    if (!sessionStorage.getItem('userRole')) {
-        window.location.replace("login.html");
-    }
-</script>
-
+    <script>
+        // Auth guard: kick out users who aren't logged in
+        if (!sessionStorage.getItem('userRole')) {
+            window.location.replace("login.html");
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Behind The Dishes</title>
@@ -26,7 +24,8 @@
                 <li><a href="#about-section">Service</a></li>
             </ul>
         </nav>
-        <a href="login.html" class="logout-btn">
+        <!-- FIX: logout now calls the proper logout function instead of just linking to login.html -->
+        <a href="#" onclick="logoutUser(); return false;" class="logout-btn">
             <i class="fa-solid fa-right-from-bracket"></i> Logout
         </a>
     </header>
@@ -38,102 +37,91 @@
         </div>
     </main>
 
-<section class="about-us-section" id="about">
-    <h2 class="about-title">ABOUT US</h2>
-    
-    <div class="about-grid">
-        <div class="about-image">
-            <img src="Pics/porke.png" alt="Crispy Roasted Pork">
+    <section class="about-us-section" id="about">
+        <h2 class="about-title">ABOUT US</h2>
+        <div class="about-grid">
+            <div class="about-image">
+                <img src="Pics/porke.png" alt="Crispy Roasted Pork">
+            </div>
+            <div class="about-card">
+                <p class="card-subtitle">Premium Catering & Short Order Delights</p>
+                <h3 class="card-brand">SAVOR <br> & <br> SOUL</h3>
+                <p class="card-description">
+                    Bringing gourmet flavors to your most meaningful moments.<br><br>
+                    From corporate meetings to intimate celebrations, we craft affordable, chef-inspired dishes tailored for every occasion.
+                </p>
+                <a href="menu.html" class="menu-btn">MENU</a>
+            </div>
+            <div class="about-image">
+                <img src="Pics/porku.png" alt="Sliced Lechon with Dips">
+            </div>
         </div>
+    </section>
 
-        <div class="about-card">
-            <p class="card-subtitle">Premium Catering & Short Order Delights</p>
-            <h3 class="card-brand">SAVOR <br> & <br> SOUL</h3>
-            <p class="card-description">
-                Bringing gourmet flavors to your most meaningful moments.<br><br>
-                From corporate meetings to intimate celebrations, we craft affordable, chef-inspired dishes tailored for every occasion.
-            </p>
-            <a href="#menu" class="menu-btn">MENU</a>
-        </div>
-
-        <div class="about-image">
-            <img src="Pics/porku.png" alt="Sliced Lechon with Dips">
-        </div>
-    </div>
-</section>
-
-<body class="contact-page">
+    <!-- Contact Section -->
     <section class="contact-section">
-    <div class="contact-header">
-        <h1>Contact Us</h1>
-        <p>With over 12 years of service, Kikay’s Kusina is Lapu-Lapu City’s go-to for "Lami Na, Barato Pa"</p>
-    </div>
-
-    <div class="container">
-        <div class="contact-wrapper">
-            
-            <div class="contact-info">
-                <div class="info-grid">
-                    <div class="info-card">
-                        <i class="fas fa-phone"></i>
-                        <h3>Phone</h3>
-                        <p>+63 912 345 6789</p>
-                    </div>
-                    <div class="info-card">
-                        <i class="fab fa-whatsapp"></i>
-                        <h3>Whatsapp</h3>
-                        <p>082-123-234-345</p>
-                    </div>
-                    <div class="info-card">
-                        <i class="fas fa-envelope"></i>
-                        <h3>Email</h3>
-                        <p>hello@kikayskusina.com</p>
-                    </div>
-                    <div class="info-card">
-                        <i class="fas fa-store"></i>
-                        <h3>Our Shop</h3>
-                        <p>Babag 1, Lapu-Lapu City, Philippines, 6015</p>
-                    </div>
-                </div>
-                
-                <div class="map-container">
-                    <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3925.651060700662!2d123.9528084!3d10.2896735!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a99b6fa5c429b7%3A0x6ac23cab3fae4d1f!2sKIKAYS&#39;%20KUSINA!5e0!3m2!1sen!2sph!4v1778330783689!5m2!1sen!2sph" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" 
-                        width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy">
-                    </iframe>
-                </div>
-            </div>
-
-            <div class="contact-form-container">
-                <h2>Get In Touch</h2>
-                <p>We’d love to hear from you! For faster bookings and inquiries, please reach out through our official channels:</p>
-                
-                <form class="contact-form">
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" placeholder="Your Name...">
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" placeholder="example@gmail.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Subject</label>
-                        <input type="text" placeholder="Title...">
-                    </div>
-                    <div class="form-group">
-                        <label>Message</label>
-                        <textarea rows="5" placeholder="Type Here..."></textarea>
-                    </div>
-                    <button type="submit" class="btn-send">Send Now</button>
-                </form>
-            </div>
-
+        <div class="contact-header">
+            <h1>Contact Us</h1>
+            <p>With over 12 years of service, Kikay's Kusina is Lapu-Lapu City's go-to for "Lami Na, Barato Pa"</p>
         </div>
-    </div>
-</section>
-
-<script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script>
+        <div class="container">
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <i class="fas fa-phone"></i>
+                            <h3>Phone</h3>
+                            <p>+63 912 345 6789</p>
+                        </div>
+                        <div class="info-card">
+                            <i class="fab fa-whatsapp"></i>
+                            <h3>Whatsapp</h3>
+                            <p>082-123-234-345</p>
+                        </div>
+                        <div class="info-card">
+                            <i class="fas fa-envelope"></i>
+                            <h3>Email</h3>
+                            <p>hello@kikayskusina.com</p>
+                        </div>
+                        <div class="info-card">
+                            <i class="fas fa-store"></i>
+                            <h3>Our Shop</h3>
+                            <p>Babag 1, Lapu-Lapu City, Philippines, 6015</p>
+                        </div>
+                    </div>
+                    <div class="map-container">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3925.651060700662!2d123.9528084!3d10.2896735!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a99b6fa5c429b7%3A0x6ac23cab3fae4d1f!2sKIKAYS&#39;%20KUSINA!5e0!3m2!1sen!2sph!4v1778330783689!5m2!1sen!2sph"
+                            width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+                <div class="contact-form-container">
+                    <h2>Get In Touch</h2>
+                    <p>We'd love to hear from you! For faster bookings and inquiries, please reach out through our official channels:</p>
+                    <div class="contact-form">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" placeholder="Your Name...">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" placeholder="example@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Subject</label>
+                            <input type="text" placeholder="Title...">
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea rows="5" placeholder="Type Here..."></textarea>
+                        </div>
+                        <button type="button" class="btn-send">Send Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <section id="about-section" class="info-section">
         <div class="info-container">
@@ -150,5 +138,7 @@
             </div>
         </div>
     </section>
+
+    <script src="script.js"></script>
 </body>
 </html>

@@ -1,119 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <script>
-    // Immediate Redirect: Kick out unauthorized users before the page loads
-    if (!sessionStorage.getItem('userRole')) {
-        window.location.replace("login.html");
-    }
-</script>
-
+        // Auth guard: kick out unauthorized users before the page loads
+        if (!sessionStorage.getItem('userRole') || sessionStorage.getItem('userRole') !== 'admin') {
+            window.location.replace("login.html");
+        }
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard | Ordering System</title>
-
     <link rel="stylesheet" href="admin-style.css" />
 </head>
 
-
 <body class="admin-page">
 
-    <!-- =========================
-         SIDEBAR
-    ========================== -->
+    <!-- SIDEBAR -->
     <aside class="sidebar">
-
         <div class="logo">
             <h2>AdminPanel</h2>
         </div>
-
         <nav class="sidebar-nav">
             <a href="#" class="active">Orders</a>
         </nav>
-
     </aside>
 
-    <!-- =========================
-         MAIN CONTENT
-    ========================== -->
+    <!-- MAIN CONTENT -->
     <main class="main-content">
 
         <!-- HEADER -->
         <header class="dashboard-header">
-
             <div class="header-left">
                 <h1>Order Management</h1>
             </div>
-
             <div class="user-profile">
                 <span class="admin-name">Admin User</span>
-
-                <button
-                    type="button"
-                    class="logout-btn"
-                    onclick="handleLogout()"
-                >
-                    Logout
-                </button>
+                <!-- FIX: calls handleLogout() which is defined in admin-logic.js loaded at bottom -->
+                <button type="button" class="logout-btn" onclick="handleLogout()">Logout</button>
             </div>
-
         </header>
 
-        <!-- =========================
-             STATS SECTION
-        ========================== -->
+        <!-- STATS SECTION -->
         <section class="stats-grid">
-
             <div class="stat-card">
                 <h3>Total Orders</h3>
                 <p id="totalOrders">0</p>
             </div>
-
             <div class="stat-card">
                 <h3>Pending</h3>
                 <p id="pendingOrders">0</p>
             </div>
-
             <div class="stat-card">
                 <h3>Revenue</h3>
                 <p id="totalRevenue">₱0.00</p>
             </div>
-
         </section>
 
-        <!-- =========================
-             ORDER TABLE SECTION
-        ========================== -->
+        <!-- ORDER TABLE SECTION -->
         <section class="order-table-container">
-
             <div class="table-header">
-
                 <h2>Recent Orders</h2>
-
                 <div class="table-actions">
-
-                    <input
-                        type="text"
-                        id="searchOrders"
-                        placeholder="Search orders..."
-                    />
-
+                    <input type="text" id="searchOrders" placeholder="Search orders..." />
                     <select id="filterStatus">
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
                         <option value="completed">Completed</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
-
                 </div>
-
             </div>
-
             <div class="table-wrapper">
-
                 <table class="orders-table">
-
                     <thead>
                         <tr>
                             <th>Order ID</th>
@@ -126,23 +84,15 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-
-                    <tbody id="ordersTableBody">
-
-                    </tbody>
-
+                    <tbody id="ordersTableBody"></tbody>
                 </table>
-
             </div>
-
         </section>
 
     </main>
 
-    <!-- =========================
-         JAVASCRIPT
-    ========================== -->
-  <script src="script.js"></script>
-  <script src="admin-logic.js"></script>
+    <!-- Scripts at the bottom so all DOM + functions are ready -->
+    <script src="script.js"></script>
+    <script src="admin-logic.js"></script>
 </body>
 </html>

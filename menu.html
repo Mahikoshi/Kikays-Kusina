@@ -1,240 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<script>
-    // Immediate Redirect: Kick out unauthorized users before the page loads
-    if (!sessionStorage.getItem('userRole')) {
-        window.location.replace("login.html");
-    }
-</script>
-
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kikay's Kusina</title>
-  <link rel="stylesheet" href="menu-style.css" />
+    <script>
+        // Auth guard: kick out users who aren't logged in
+        if (!sessionStorage.getItem('userRole')) {
+            window.location.replace("login.html");
+        }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kikay's Kusina</title>
+    <link rel="stylesheet" href="menu-style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-
-  <!-- NAV -->
-  <nav class="navbar">
-    <div class="nav-links">
-      <a href="home.html" class="nav-link active">Home</a>
-      <a href="menu.html" class="nav-link">Menu</a>
-      <a href="home.html#about-section" class="nav-link">About Us</a>
-      <a href="#" class="nav-link">Service</a>
-      
-    </div>
-  </nav>
-<a href="login.html" class="logout-btn">
+    <!-- NAV -->
+    <nav class="navbar">
+        <div class="nav-links">
+            <a href="home.html" class="nav-link">Home</a>
+            <a href="menu.html" class="nav-link active">Menu</a>
+            <a href="home.html#about-section" class="nav-link">About Us</a>
+            <a href="home.html#about-section" class="nav-link">Service</a>
+        </div>
+        <!-- FIX: logout calls server-side logout function -->
+        <a href="#" onclick="logoutUser(); return false;" class="nav-link" style="margin-left:auto; color: var(--red); font-weight:700;">
             <i class="fa-solid fa-right-from-bracket"></i> Logout
         </a>
-  <div class="layout">
+    </nav>
 
-    <!-- LEFT SIDEBAR -->
-    <aside class="sidebar">
-      <div class="brand">
-        <h1 class="brand-title">Kikay's<br/>Kusina</h1>
-      </div>
-      <nav class="category-nav">
-        <button class="cat-btn active" data-cat="pork">
-          <span class="cat-icon">🥩</span> Pork
-        </button>
-        <button class="cat-btn" data-cat="chicken">
-          <span class="cat-icon">🍗</span> Chicken
-        </button>
-        <button class="cat-btn" data-cat="seafood">
-          <span class="cat-icon">🦞</span> Seafood
-        </button>
-        <button class="cat-btn" data-cat="dessert">
-          <span class="cat-icon">🍮</span> Dessert
-        </button>
-        <button class="cat-btn" data-cat="beef">
-          <span class="cat-icon">🥓</span> Beef
-        </button>
-        <button class="cat-btn" data-cat="best_seller">
-          <span class="cat-icon">⭐</span> Best Seller
-        </button>
-        <button class="cat-btn" data-cat="packages">
-          <span class="cat-icon">📦</span> Packages
-        </button>
-      </nav>
-    </aside>
+    <div class="layout">
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-      <div class="main-header">
-        <h2 class="greeting">Hey, <span id="user-name">User</span>!</h2>
-        <div class="search-box">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input type="text" id="search-input" placeholder="What are your cravings..." />
-        </div>
-      </div>
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <h1 class="brand-title">Kikay's<br/>Kusina</h1>
+            </div>
+            <nav class="category-nav">
+                <button class="cat-btn active" data-cat="pork"><span class="cat-icon">🥩</span> Pork</button>
+                <button class="cat-btn" data-cat="chicken"><span class="cat-icon">🍗</span> Chicken</button>
+                <button class="cat-btn" data-cat="seafood"><span class="cat-icon">🦞</span> Seafood</button>
+                <button class="cat-btn" data-cat="dessert"><span class="cat-icon">🍮</span> Dessert</button>
+                <button class="cat-btn" data-cat="beef"><span class="cat-icon">🥓</span> Beef</button>
+                <button class="cat-btn" data-cat="best_seller"><span class="cat-icon">⭐</span> Best Seller</button>
+                <button class="cat-btn" data-cat="packages"><span class="cat-icon">📦</span> Packages</button>
+            </nav>
+        </aside>
 
-      <!-- HERO BANNER -->
-      <div class="hero-banner">
-        <img id="hero-img" src="https://images.pexels.com/photos/2092906/pexels-photo-2092906.jpeg" alt="Featured dish" />
-        <div class="hero-overlay">
-          <p class="hero-text">Taste the heart of Filipino cooking</p>
-        </div>
-      </div>
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="main-header">
+                <h2 class="greeting">Hey, <span id="user-name">User</span>!</h2>
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" id="search-input" placeholder="What are your cravings..." />
+                </div>
+            </div>
 
-      <!-- MENU SECTION -->
-      <div class="menu-section">
-        <div class="menu-section-header">
-          <h3 id="category-title" class="section-title">Pork</h3>
-          <button class="view-all-btn">View All <span>›</span></button>
-        </div>
-        <div id="menu-grid" class="menu-grid">
-          <!-- items injected by JS -->
-        </div>
-        <p id="no-results" class="no-results hidden">No items found.</p>
-      </div>
-    </main>
+            <!-- HERO BANNER -->
+            <div class="hero-banner">
+                <img id="hero-img" src="https://images.pexels.com/photos/2092906/pexels-photo-2092906.jpeg" alt="Featured dish" />
+                <div class="hero-overlay">
+                    <p class="hero-text">Taste the heart of Filipino cooking</p>
+                </div>
+            </div>
 
-    <!-- RIGHT CART -->
-    <aside class="cart-panel">
-      <h2 class="cart-title">My Cart</h2>
+            <!-- MENU SECTION -->
+            <div class="menu-section">
+                <div class="menu-section-header">
+                    <h3 id="category-title" class="section-title">Pork</h3>
+                    <button class="view-all-btn">View All <span>›</span></button>
+                </div>
+                <div id="menu-grid" class="menu-grid"></div>
+                <p id="no-results" class="no-results hidden">No items found.</p>
+            </div>
+        </main>
 
-      <!-- ADDRESS SECTION -->
-      <div class="address-section">
-        <div id="address-display" class="address-display hidden">
-          <p class="address-label">Delivery Address</p>
-          <p id="address-text" class="address-text"></p>
-          <div class="address-actions">
-            <button id="edit-address-btn" class="addr-action-btn edit-btn">Edit</button>
-            <button id="remove-address-btn" class="addr-action-btn remove-btn">Remove</button>
-          </div>
-        </div>
-        <button id="add-address-btn" class="add-address-btn">+ Add Address</button>
-      </div>
+        <!-- RIGHT CART -->
+        <aside class="cart-panel">
+            <h2 class="cart-title">My Cart</h2>
 
-      <!-- CART ITEMS -->
-      <div id="cart-items" class="cart-items">
-        <p id="empty-cart-msg" class="empty-cart-msg">Your cart is empty</p>
-      </div>
+            <!-- ADDRESS SECTION -->
+            <div class="address-section">
+                <div id="address-display" class="address-display hidden">
+                    <p class="address-label">Delivery Address</p>
+                    <p id="address-text" class="address-text"></p>
+                    <div class="address-actions">
+                        <button id="edit-address-btn" class="addr-action-btn edit-btn">Edit</button>
+                        <button id="remove-address-btn" class="addr-action-btn remove-btn">Remove</button>
+                    </div>
+                </div>
+                <button id="add-address-btn" class="add-address-btn">+ Add Address</button>
+            </div>
 
-      <!-- ORDER TOTAL -->
-      <div class="cart-summary">
-        <div class="summary-row">
-          <span>Subtotal:</span>
-          <span id="subtotal">₱0.00</span>
-        </div>
-        <div class="summary-divider"></div>
-        <div class="summary-row total-row">
-          <span>Total:</span>
-          <span id="total">₱0.00</span>
-        </div>
-      </div>
+            <!-- CART ITEMS -->
+            <div id="cart-items" class="cart-items">
+                <p id="empty-cart-msg" class="empty-cart-msg">Your cart is empty</p>
+            </div>
 
-      <button id="checkout-btn" class="checkout-btn">CHECKOUT</button>
-    </aside>
-  </div>
+            <!-- ORDER TOTAL -->
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">₱0.00</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-row total-row">
+                    <span>Total:</span>
+                    <span id="total">₱0.00</span>
+                </div>
+            </div>
 
-  <!-- ITEM DETAIL MODAL -->
-  <div id="item-modal" class="modal-overlay hidden">
-    <div class="modal-card">
-      <button id="modal-close" class="modal-close">✕</button>
-      <img id="modal-img" src="" alt="" class="modal-img" />
-      <div class="modal-body">
-        <h3 id="modal-name" class="modal-name"></h3>
-        <p id="modal-desc" class="modal-desc"></p>
-        <p id="modal-price" class="modal-price"></p>
-        <button id="modal-add-cart" class="modal-add-cart-btn">Add to Cart</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADDRESS MODAL -->
-  <div id="address-modal" class="modal-overlay hidden">
-    <div class="modal-card address-modal-card">
-      <button id="address-modal-close" class="modal-close">✕</button>
-      <h3 class="modal-name">Delivery Address</h3>
-      <textarea id="address-input" class="address-input" placeholder="Enter your full delivery address..." rows="4"></textarea>
-      <button id="save-address-btn" class="modal-add-cart-btn">Save Address</button>
-    </div>
-  </div>
-
-  <!-- CHECKOUT MODAL -->
-<div class="checkout-section">
-        <p class="checkout-label">Fulfillment Method</p>
-        <div class="payment-options">
-          <button type="button" id="delivery-btn" class="payment-option-btn active" onclick="toggleFulfillment('delivery')">Delivery</button>
-          <button type="button" id="pickup-btn" class="payment-option-btn" onclick="toggleFulfillment('pickup')">Pickup</button>
-        </div>
-      </div>
-
-      <div id="schedule-section" class="checkout-section">
-        <p id="schedule-label" class="checkout-label">Delivery Date & Time</p>
-        <input type="datetime-local" id="fulfillment-time" class="checkout-input" />
-      </div>
-
-      <div class="checkout-section">
-        <p class="checkout-label">Email Address</p>
-        <input type="email" id="checkout-email" class="checkout-input" placeholder="your@email.com" />
-      </div>
-
-      <div class="checkout-section">
-        <p class="checkout-label">Payment Method</p>
-        <div class="payment-options">
-          <button id="gcash-btn" class="payment-option-btn active" data-method="gcash">
-            <span class="pay-icon">📱</span> G-Cash
-          </button>
-          <button id="cod-btn" class="payment-option-btn" data-method="cod">
-            <span class="pay-icon">💵</span> Cash on Delivery
-          </button>
-        </div>
-      </div>
-
-<div id="gcash-upload-section" class="checkout-section">
-    <p class="checkout-label">Scan to Pay via GCash</p>
-    
-    <div style="text-align: center; margin-bottom: 15px;">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=KikaysKusina" 
-             alt="GCash QR Code" 
-             style="width: 150px; border: 2px solid #5a5a1a; border-radius: 10px;">
+            <button id="checkout-btn" class="checkout-btn">CHECKOUT</button>
+        </aside>
     </div>
 
-    <p class="checkout-label">Upload Proof of Payment</p>
-    <label class="upload-label" for="gcash-proof-input">
-        <span id="upload-label-text">Click to upload screenshot</span>
-        <input type="file" id="gcash-proof-input" accept="image/*" class="file-input" />
-    </label>
-    <img id="proof-preview" class="proof-preview hidden" alt="Proof preview" />
-</div>
-
-      <div class="checkout-order-summary">
-        <p class="checkout-label">Order Summary</p>
-        <div id="checkout-items-list" class="checkout-items-list"></div>
-        <div class="checkout-total-row">
-          <span>Total:</span>
-          <span id="checkout-total"></span>
+    <!-- ITEM DETAIL MODAL -->
+    <div id="item-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <button id="modal-close" class="modal-close">✕</button>
+            <img id="modal-img" src="" alt="" class="modal-img" />
+            <div class="modal-body">
+                <h3 id="modal-name" class="modal-name"></h3>
+                <p id="modal-desc" class="modal-desc"></p>
+                <p id="modal-price" class="modal-price"></p>
+                <button id="modal-add-cart" class="modal-add-cart-btn">Add to Cart</button>
+            </div>
         </div>
-      </div>
-
-      <button id="place-order-btn" class="modal-add-cart-btn">Place Order</button>
     </div>
-  </div>
 
-  <!-- ORDER SUCCESS MODAL -->
-  <div id="success-modal" class="modal-overlay hidden">
-    <div class="modal-card success-modal-card">
-      <div class="success-icon">✓</div>
-      <h3 class="modal-name">Order Placed!</h3>
-      <p class="success-msg">Your order has been received and is being prepared.</p>
-      <div id="order-tracker" class="order-tracker">
-        <p class="checkout-label">Order Status</p>
-        <div id="order-status-badge" class="status-badge pending">Pending</div>
-      </div>
-      <button id="order-received-btn" class="order-received-btn">Order Received</button>
-      <button id="success-close-btn" class="modal-add-cart-btn" style="margin-top:10px">Close</button>
+    <!-- ADDRESS MODAL -->
+    <div id="address-modal" class="modal-overlay hidden">
+        <div class="modal-card address-modal-card">
+            <button id="address-modal-close" class="modal-close">✕</button>
+            <h3 class="modal-name">Delivery Address</h3>
+            <textarea id="address-input" class="address-input" placeholder="Enter your full delivery address..." rows="4"></textarea>
+            <button id="save-address-btn" class="modal-add-cart-btn">Save Address</button>
+        </div>
     </div>
-  </div>
 
-  <script src="script.js"></script>
-  <script src="menu-logic.js"></script>
+    <!-- FIX: CHECKOUT MODAL — properly wrapped in a single modal-overlay div -->
+    <div id="checkout-modal" class="modal-overlay hidden">
+        <div class="modal-card checkout-modal-card">
+            <button id="checkout-modal-close" class="modal-close">✕</button>
+            <h3 class="modal-name" style="padding: 0 24px; margin-top: 28px;">Checkout</h3>
+
+            <div style="padding: 0 24px 28px;">
+                <div class="checkout-section">
+                    <p class="checkout-label">Fulfillment Method</p>
+                    <div class="payment-options">
+                        <button type="button" id="delivery-btn" class="payment-option-btn active" onclick="toggleFulfillment('delivery')">Delivery</button>
+                        <button type="button" id="pickup-btn" class="payment-option-btn" onclick="toggleFulfillment('pickup')">Pickup</button>
+                    </div>
+                </div>
+
+                <div id="schedule-section" class="checkout-section">
+                    <p id="schedule-label" class="checkout-label">Delivery Date &amp; Time</p>
+                    <input type="datetime-local" id="fulfillment-time" class="checkout-input" />
+                </div>
+
+                <div class="checkout-section">
+                    <p class="checkout-label">Email Address</p>
+                    <input type="email" id="checkout-email" class="checkout-input" placeholder="your@email.com" />
+                </div>
+
+                <div class="checkout-section">
+                    <p class="checkout-label">Payment Method</p>
+                    <div class="payment-options">
+                        <button id="gcash-btn" class="payment-option-btn active" data-method="gcash">
+                            <span class="pay-icon">📱</span> G-Cash
+                        </button>
+                        <button id="cod-btn" class="payment-option-btn" data-method="cod">
+                            <span class="pay-icon">💵</span> Cash on Delivery
+                        </button>
+                    </div>
+                </div>
+
+                <div id="gcash-upload-section" class="checkout-section">
+                    <p class="checkout-label">Scan to Pay via GCash</p>
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=KikaysKusina"
+                             alt="GCash QR Code"
+                             style="width: 150px; border: 2px solid #5a5a1a; border-radius: 10px;">
+                    </div>
+                    <p class="checkout-label">Upload Proof of Payment</p>
+                    <label class="upload-label" for="gcash-proof-input">
+                        <span id="upload-label-text">Click to upload screenshot</span>
+                        <input type="file" id="gcash-proof-input" accept="image/*" class="file-input" />
+                    </label>
+                    <img id="proof-preview" class="proof-preview hidden" alt="Proof preview" />
+                </div>
+
+                <div class="checkout-order-summary">
+                    <p class="checkout-label">Order Summary</p>
+                    <div id="checkout-items-list" class="checkout-items-list"></div>
+                    <div class="checkout-total-row">
+                        <span>Total:</span>
+                        <span id="checkout-total"></span>
+                    </div>
+                </div>
+
+                <button id="place-order-btn" class="modal-add-cart-btn" style="margin-top:16px;">Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ORDER SUCCESS MODAL -->
+    <div id="success-modal" class="modal-overlay hidden">
+        <div class="modal-card success-modal-card">
+            <div class="success-icon">✓</div>
+            <h3 class="modal-name">Order Placed!</h3>
+            <p class="success-msg">Your order has been received and is being prepared.</p>
+            <div id="order-tracker" class="order-tracker">
+                <p class="checkout-label">Order Status</p>
+                <div id="order-status-badge" class="status-badge pending">Pending</div>
+            </div>
+            <button id="order-received-btn" class="order-received-btn">Order Received</button>
+            <button id="success-close-btn" class="modal-add-cart-btn" style="margin-top:10px">Close</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="menu-logic.js"></script>
 </body>
 </html>
