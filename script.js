@@ -103,4 +103,20 @@ document.getElementById('loginForm').onsubmit = async (e) => {
             showAlert(alerts.loginSuccess, "Password Updated Successfully!");
         } else showAlert(alerts.forgotErr, data.message);
     };
+    
+    function logoutUser() {
+    fetch('your_backend_filename.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'action=logout'
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // .replace() destroys the current history state, preventing backwards tracking
+            window.location.replace('login.php'); 
+        }
+    });
+}
+
 });

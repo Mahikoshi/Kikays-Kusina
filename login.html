@@ -72,5 +72,15 @@
         </main>
     </div>
     <script src="script.js"></script>
+        <!-- PLACE THE BACK-BUTTON TRAP HERE -->
+    <script type="text/javascript">
+        // Injects a dummy state into the timeline history
+        history.pushState(null, null, location.href);
+        
+        // Overrides the back browser actions
+        window.onpopstate = function () {
+            history.go(1);
+        };
+    </script>
 </body>
 </html>

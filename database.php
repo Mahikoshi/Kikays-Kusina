@@ -105,10 +105,10 @@ if ($action === 'place_order') {
 
 // --- LOGOUT ---
 if ($action === 'logout') {
-    // Clear all session variables
+    // Clear session data variables
     $_SESSION = array();
 
-    // Destroy the session cookie
+    // Destroy the session cookie instance safely
     if (ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
         setcookie(session_name(), '', time() - 42000,
@@ -117,11 +117,15 @@ if ($action === 'logout') {
         );
     }
 
-    // Destroy the session
+    // Destroy server side tracking 
     session_destroy();
 
+    // 3. FIXED: Since this backend handles JavaScript AJAX requests, 
+    // it must return a JSON response so your frontend can handle the redirection.
     echo json_encode(["status" => "success", "message" => "Logged out successfully"]);
     exit;
 }
+
+
 
 ?>
