@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- FIX: Auth guard checks role === 'admin' specifically.
+         A regular user who somehow lands here gets sent back to login. -->
     <script>
-        // Auth guard: kick out unauthorized users before the page loads
-        if (!sessionStorage.getItem('userRole') || sessionStorage.getItem('userRole') !== 'admin') {
-            window.location.replace("login.html");
-        }
+        (function () {
+            var role = sessionStorage.getItem('userRole');
+            if (!role || role !== 'admin') {
+                window.location.replace("login.html");
+            }
+        }());
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard | Ordering System</title>
+    <title>Admin Dashboard | Kikay's Kusina</title>
     <link rel="stylesheet" href="admin-style.css" />
 </head>
 
@@ -18,69 +22,111 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="logo">
-            <h2>AdminPanel</h2>
+            <div class="logo-icon">🍽️</div>
+            <h2>Kikay's Kusina</h2>
+            <p class="logo-sub">Admin Panel</p>
         </div>
         <nav class="sidebar-nav">
-            <a href="#" class="active">Orders</a>
+            <a href="#" class="active">
+                <span class="nav-icon">📋</span> Orders
+            </a>
         </nav>
+        <div class="sidebar-footer">
+            <button type="button" class="sidebar-logout-btn" onclick="handleLogout()">
+                ⬅ Logout
+            </button>
+        </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN -->
     <main class="main-content">
 
-        <!-- HEADER -->
+        <!-- Header -->
         <header class="dashboard-header">
-            <div class="header-left">
+            <div>
                 <h1>Order Management</h1>
+                <p class="header-sub">Manage and track all incoming orders in real-time.</p>
             </div>
             <div class="user-profile">
-                <span class="admin-name">Admin User</span>
-                <!-- FIX: calls handleLogout() which is defined in admin-logic.js loaded at bottom -->
+                <div class="admin-avatar">A</div>
+                <div>
+                    <div class="admin-name">Admin User</div>
+                    <div class="admin-role-label">Administrator</div>
+                </div>
                 <button type="button" class="logout-btn" onclick="handleLogout()">Logout</button>
             </div>
         </header>
 
-        <!-- STATS SECTION -->
+        <!-- Stats -->
         <section class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Orders</h3>
-                <p id="totalOrders">0</p>
+            <div class="stat-card total">
+                <div class="stat-icon">📦</div>
+                <div class="stat-info">
+                    <h3>Total Orders</h3>
+                    <p id="totalOrders">0</p>
+                </div>
             </div>
-            <div class="stat-card">
-                <h3>Pending</h3>
-                <p id="pendingOrders">0</p>
+            <div class="stat-card pending-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-info">
+                    <h3>Pending</h3>
+                    <p id="pendingOrders">0</p>
+                </div>
             </div>
-            <div class="stat-card">
-                <h3>Revenue</h3>
-                <p id="totalRevenue">₱0.00</p>
+            <div class="stat-card completed-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3>Completed</h3>
+                    <p id="completedOrders">0</p>
+                </div>
+            </div>
+            <div class="stat-card cancelled-card">
+                <div class="stat-icon">❌</div>
+                <div class="stat-info">
+                    <h3>Cancelled</h3>
+                    <p id="cancelledOrders">0</p>
+                </div>
+            </div>
+            <div class="stat-card revenue-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <h3>Revenue</h3>
+                    <p id="totalRevenue">₱0.00</p>
+                </div>
             </div>
         </section>
 
-        <!-- ORDER TABLE SECTION -->
+        <!-- Order Table -->
         <section class="order-table-container">
             <div class="table-header">
                 <h2>Recent Orders</h2>
                 <div class="table-actions">
-                    <input type="text" id="searchOrders" placeholder="Search orders..." />
+                    <div class="search-wrap">
+                        <span class="search-icon-lbl">🔍</span>
+                        <input type="text" id="searchOrders" placeholder="Search by name, items, address…" />
+                    </div>
                     <select id="filterStatus">
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
                         <option value="completed">Completed</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
+                    <!-- FIX: Refresh button reloads orders from server without full page reload -->
+                    <button class="refresh-btn" id="refreshOrdersBtn">↻ Refresh</button>
                 </div>
             </div>
+
             <div class="table-wrapper">
                 <table class="orders-table">
                     <thead>
                         <tr>
-                            <th>Order ID</th>
+                            <th>#ID</th>
                             <th>Customer</th>
-                            <th>Items</th>
-                            <th>Total Price</th>
+                            <th>Items Ordered</th>
+                            <th>Total &amp; Payment</th>
                             <th>Status</th>
                             <th>Order Type</th>
-                            <th>Schedule</th>
+                            <th>Schedule / Placed</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -91,8 +137,14 @@
 
     </main>
 
-    <!-- Scripts at the bottom so all DOM + functions are ready -->
     <script src="script.js"></script>
     <script src="admin-logic.js"></script>
+    <script>
+        // FIX: Refresh button calls loadOrders in admin-logic instead of reloading whole page
+        document.getElementById('refreshOrdersBtn').addEventListener('click', function () {
+            if (typeof loadOrders === 'function') loadOrders();
+            else location.reload();
+        });
+    </script>
 </body>
 </html>

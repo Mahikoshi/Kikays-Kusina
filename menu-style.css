@@ -893,3 +893,174 @@ html, body {
   .sidebar, .cart-panel { display: none; }
   .menu-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ===== LOGOUT NAV BUTTON ===== */
+.logout-nav-btn {
+  margin-left: auto;
+  color: var(--red) !important;
+  font-weight: 700;
+}
+
+/* ===== ACTIVE ORDERS PANEL ===== */
+.active-orders-section {
+  margin-top: 16px;
+  border-top: 2px solid var(--cream-dark);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.active-orders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.active-orders-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--olive-dark);
+  letter-spacing: 0.3px;
+}
+
+.refresh-orders-btn {
+  background: var(--cream-dark);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), transform var(--transition);
+  color: var(--olive-dark);
+}
+.refresh-orders-btn:hover { background: var(--olive-dark); color: var(--cream); transform: rotate(180deg); }
+
+.active-orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.active-orders-list::-webkit-scrollbar { width: 4px; }
+.active-orders-list::-webkit-scrollbar-thumb { background: var(--cream-dark); border-radius: 4px; }
+
+.no-orders-msg {
+  font-size: 12px;
+  color: var(--gray-400);
+  text-align: center;
+  padding: 12px 0;
+  font-style: italic;
+}
+
+/* ── ORDER CARD ── */
+.order-card {
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  border-left: 3px solid var(--cream-dark);
+  animation: slideIn 0.3s ease;
+  transition: border-color 0.4s ease;
+}
+
+/* Status-coloured left border */
+.order-card:has(.order-status-pending)   { border-color: #f59e0b; }
+.order-card:has(.order-status-completed) { border-color: #10b981; }
+.order-card:has(.order-status-cancelled) { border-color: #ef4444; opacity: 0.75; }
+.order-card:has(.order-status-received)  { border-color: #6366f1; }
+
+.order-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.order-card-id {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--olive-dark);
+}
+
+.order-card-status {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.order-status-pending   { background: #fef3c7; color: #92400e; }
+.order-status-completed { background: #d1fae5; color: #065f46; }
+.order-status-cancelled { background: #fee2e2; color: #991b1b; }
+.order-status-received  { background: #ede9fe; color: #5b21b6; }
+
+.order-card-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.order-item-chip {
+  display: inline-block;
+  background: var(--cream-dark);
+  color: var(--olive-dark);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.order-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-card-type {
+  font-size: 11px;
+  color: var(--gray-600);
+}
+
+.order-card-total {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--olive-dark);
+}
+
+.order-card-address,
+.order-card-time,
+.order-placed-at {
+  font-size: 11px;
+  color: var(--gray-400);
+  line-height: 1.4;
+}
+
+.order-placed-at { font-style: italic; }
+
+/* ── ORDER RECEIVED PILL BUTTON ── */
+.order-received-pill-btn {
+  width: 100%;
+  padding: 10px;
+  background: var(--green-dark);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  box-shadow: 0 2px 8px rgba(39,174,96,0.25);
+  margin-top: 2px;
+}
+.order-received-pill-btn:hover    { background: #229954; transform: translateY(-1px); }
+.order-received-pill-btn:disabled { background: var(--gray-400); cursor: not-allowed; transform: none; box-shadow: none; }

@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- FIX: Auth guard redirects non-logged-in users, and sends admins back to admin.html -->
     <script>
-        // Auth guard: kick out users who aren't logged in
-        if (!sessionStorage.getItem('userRole')) {
-            window.location.replace("login.html");
-        }
+        (function () {
+            var role = sessionStorage.getItem('userRole');
+            if (!role) {
+                window.location.replace("login.html");
+            } else if (role === 'admin') {
+                window.location.replace("admin.html");
+            }
+        }());
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kikay's Kusina</title>
+    <title>Menu | Kikay's Kusina</title>
     <link rel="stylesheet" href="menu-style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -22,27 +27,28 @@
             <a href="menu.html" class="nav-link active">Menu</a>
             <a href="home.html#about-section" class="nav-link">About Us</a>
         </div>
-        <!-- FIX: logout calls server-side logout function -->
-        <a href="#" onclick="logoutUser(); return false;" class="nav-link" style="margin-left:auto; color: var(--red); font-weight:700;">
+        <!-- FIX: calls logoutUser() in script.js which properly destroys PHP session -->
+        <a href="#" onclick="logoutUser(); return false;" class="nav-link logout-nav-btn">
             <i class="fa-solid fa-right-from-bracket"></i> Logout
         </a>
     </nav>
 
     <div class="layout">
 
-        <!-- LEFT SIDEBAR -->
+        <!-- LEFT SIDEBAR — Categories -->
         <aside class="sidebar">
             <div class="brand">
                 <h1 class="brand-title">Kikay's<br/>Kusina</h1>
             </div>
+            <!-- FIX: data-cat values must exactly match category column values in the DB -->
             <nav class="category-nav">
-                <button class="cat-btn active" data-cat="pork"><span class="cat-icon">🥩</span> Pork</button>
-                <button class="cat-btn" data-cat="chicken"><span class="cat-icon">🍗</span> Chicken</button>
-                <button class="cat-btn" data-cat="seafood"><span class="cat-icon">🦞</span> Seafood</button>
-                <button class="cat-btn" data-cat="dessert"><span class="cat-icon">🍮</span> Dessert</button>
-                <button class="cat-btn" data-cat="beef"><span class="cat-icon">🥓</span> Beef</button>
-                <button class="cat-btn" data-cat="best_seller"><span class="cat-icon">⭐</span> Best Seller</button>
-                <button class="cat-btn" data-cat="packages"><span class="cat-icon">📦</span> Packages</button>
+                <button class="cat-btn active" data-cat="pork">        <span class="cat-icon">🥩</span> Pork</button>
+                <button class="cat-btn"         data-cat="chicken">    <span class="cat-icon">🍗</span> Chicken</button>
+                <button class="cat-btn"         data-cat="seafood">    <span class="cat-icon">🦞</span> Seafood</button>
+                <button class="cat-btn"         data-cat="dessert">    <span class="cat-icon">🍮</span> Dessert</button>
+                <button class="cat-btn"         data-cat="beef">       <span class="cat-icon">🥓</span> Beef</button>
+                <button class="cat-btn"         data-cat="best_seller"><span class="cat-icon">⭐</span> Best Seller</button>
+                <button class="cat-btn"         data-cat="packages">   <span class="cat-icon">📦</span> Packages</button>
             </nav>
         </aside>
 
@@ -58,35 +64,35 @@
                 </div>
             </div>
 
-            <!-- HERO BANNER -->
             <div class="hero-banner">
-                <img id="hero-img" src="https://images.pexels.com/photos/2092906/pexels-photo-2092906.jpeg" alt="Featured dish" />
+                <img id="hero-img"
+                     src="https://images.pexels.com/photos/2092906/pexels-photo-2092906.jpeg"
+                     alt="Featured dish" />
                 <div class="hero-overlay">
                     <p class="hero-text">Taste the heart of Filipino cooking</p>
                 </div>
             </div>
 
-            <!-- MENU SECTION -->
             <div class="menu-section">
                 <div class="menu-section-header">
-                    <button class="view-all-btn">View All <span>›</span></button>
+                    <button class="view-all-btn" id="view-all-btn">View All <span>›</span></button>
                 </div>
                 <div id="menu-grid" class="menu-grid"></div>
                 <p id="no-results" class="no-results hidden">No items found.</p>
             </div>
         </main>
 
-        <!-- RIGHT CART -->
+        <!-- RIGHT — Cart Panel -->
         <aside class="cart-panel">
             <h2 class="cart-title">My Cart</h2>
 
-            <!-- ADDRESS SECTION -->
+            <!-- ADDRESS -->
             <div class="address-section">
                 <div id="address-display" class="address-display hidden">
                     <p class="address-label">Delivery Address</p>
                     <p id="address-text" class="address-text"></p>
                     <div class="address-actions">
-                        <button id="edit-address-btn" class="addr-action-btn edit-btn">Edit</button>
+                        <button id="edit-address-btn"   class="addr-action-btn edit-btn">Edit</button>
                         <button id="remove-address-btn" class="addr-action-btn remove-btn">Remove</button>
                     </div>
                 </div>
@@ -95,10 +101,10 @@
 
             <!-- CART ITEMS -->
             <div id="cart-items" class="cart-items">
-                <p id="empty-cart-msg" class="empty-cart-msg">Your cart is empty</p>
+                <p class="empty-cart-msg">Your cart is empty</p>
             </div>
 
-            <!-- ORDER TOTAL -->
+            <!-- TOTALS -->
             <div class="cart-summary">
                 <div class="summary-row">
                     <span>Subtotal:</span>
@@ -112,6 +118,17 @@
             </div>
 
             <button id="checkout-btn" class="checkout-btn">CHECKOUT</button>
+
+            <!-- ACTIVE ORDERS PANEL -->
+            <div class="active-orders-section" id="active-orders-section">
+                <div class="active-orders-header">
+                    <h3 class="active-orders-title">📋 My Orders</h3>
+                    <button class="refresh-orders-btn" id="refresh-orders-btn" title="Refresh orders">↻</button>
+                </div>
+                <div id="active-orders-list" class="active-orders-list">
+                    <p class="no-orders-msg">No orders yet.</p>
+                </div>
+            </div>
         </aside>
     </div>
 
@@ -121,9 +138,9 @@
             <button id="modal-close" class="modal-close">✕</button>
             <img id="modal-img" src="" alt="" class="modal-img" />
             <div class="modal-body">
-                <h3 id="modal-name" class="modal-name"></h3>
-                <p id="modal-desc" class="modal-desc"></p>
-                <p id="modal-price" class="modal-price"></p>
+                <h3 id="modal-name"  class="modal-name"></h3>
+                <p  id="modal-desc"  class="modal-desc"></p>
+                <p  id="modal-price" class="modal-price"></p>
                 <button id="modal-add-cart" class="modal-add-cart-btn">Add to Cart</button>
             </div>
         </div>
@@ -134,36 +151,45 @@
         <div class="modal-card address-modal-card">
             <button id="address-modal-close" class="modal-close">✕</button>
             <h3 class="modal-name">Delivery Address</h3>
-            <textarea id="address-input" class="address-input" placeholder="Enter your full delivery address..." rows="4"></textarea>
+            <textarea id="address-input" class="address-input"
+                      placeholder="Enter your full delivery address..." rows="4"></textarea>
             <button id="save-address-btn" class="modal-add-cart-btn">Save Address</button>
         </div>
     </div>
 
-    <!-- FIX: CHECKOUT MODAL — properly wrapped in a single modal-overlay div -->
+    <!-- CHECKOUT MODAL -->
     <div id="checkout-modal" class="modal-overlay hidden">
         <div class="modal-card checkout-modal-card">
             <button id="checkout-modal-close" class="modal-close">✕</button>
             <h3 class="modal-name" style="padding: 0 24px; margin-top: 28px;">Checkout</h3>
 
             <div style="padding: 0 24px 28px;">
+
+                <!-- Fulfillment method -->
                 <div class="checkout-section">
                     <p class="checkout-label">Fulfillment Method</p>
                     <div class="payment-options">
-                        <button type="button" id="delivery-btn" class="payment-option-btn active" onclick="toggleFulfillment('delivery')">Delivery</button>
-                        <button type="button" id="pickup-btn" class="payment-option-btn" onclick="toggleFulfillment('pickup')">Pickup</button>
+                        <button type="button" id="delivery-btn" class="payment-option-btn active"
+                                onclick="toggleFulfillment('delivery')">🛵 Delivery</button>
+                        <button type="button" id="pickup-btn"   class="payment-option-btn"
+                                onclick="toggleFulfillment('pickup')">🏪 Pickup</button>
                     </div>
                 </div>
 
+                <!-- Schedule -->
                 <div id="schedule-section" class="checkout-section">
-                    <p id="schedule-label" class="checkout-label">Date &amp; Time</p>
+                    <p id="schedule-label" class="checkout-label">Delivery Date &amp; Time</p>
                     <input type="datetime-local" id="fulfillment-time" class="checkout-input" />
                 </div>
 
+                <!-- Email -->
                 <div class="checkout-section">
                     <p class="checkout-label">Email Address</p>
+                    <!-- FIX: email is now actually sent in the place_order FormData -->
                     <input type="email" id="checkout-email" class="checkout-input" placeholder="your@email.com" />
                 </div>
 
+                <!-- Payment method -->
                 <div class="checkout-section">
                     <p class="checkout-label">Payment Method</p>
                     <div class="payment-options">
@@ -176,12 +202,13 @@
                     </div>
                 </div>
 
+                <!-- GCash upload -->
                 <div id="gcash-upload-section" class="checkout-section">
                     <p class="checkout-label">Scan to Pay via GCash</p>
-                    <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="text-align:center; margin-bottom:15px;">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=KikaysKusina"
                              alt="GCash QR Code"
-                             style="width: 150px; border: 2px solid #5a5a1a; border-radius: 10px;">
+                             style="width:150px; border:2px solid #5a5a1a; border-radius:10px;">
                     </div>
                     <p class="checkout-label">Upload Proof of Payment</p>
                     <label class="upload-label" for="gcash-proof-input">
@@ -191,6 +218,7 @@
                     <img id="proof-preview" class="proof-preview hidden" alt="Proof preview" />
                 </div>
 
+                <!-- Order summary -->
                 <div class="checkout-order-summary">
                     <p class="checkout-label">Order Summary</p>
                     <div id="checkout-items-list" class="checkout-items-list"></div>
@@ -200,23 +228,10 @@
                     </div>
                 </div>
 
-                <button id="place-order-btn" class="modal-add-cart-btn" style="margin-top:16px;">Place Order</button>
+                <button id="place-order-btn" class="modal-add-cart-btn" style="margin-top:16px;">
+                    Place Order
+                </button>
             </div>
-        </div>
-    </div>
-
-    <!-- ORDER SUCCESS MODAL -->
-    <div id="success-modal" class="modal-overlay hidden">
-        <div class="modal-card success-modal-card">
-            <div class="success-icon">✓</div>
-            <h3 class="modal-name">Order Placed!</h3>
-            <p class="success-msg">Your order has been received and is being prepared.</p>
-            <div id="order-tracker" class="order-tracker">
-                <p class="checkout-label">Order Status</p>
-                <div id="order-status-badge" class="status-badge pending">Pending</div>
-            </div>
-            <button id="order-received-btn" class="order-received-btn">Order Received</button>
-            <button id="success-close-btn" class="modal-add-cart-btn" style="margin-top:10px">Close</button>
         </div>
     </div>
 
