@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             allOrders = json;
-            renderTable(allOrders);
+            renderTable(allOrders)
             updateStats(allOrders);
         } catch (err) {
             console.error("Load Error:", err);

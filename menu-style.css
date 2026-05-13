@@ -222,7 +222,12 @@ html, body {
 }
 
 /* ===== MENU SECTION ===== */
-.menu-section { display: flex; flex-direction: column; gap: 14px; }
+.menu-section { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 14px; 
+  padding: 10px;
+}
 
 .menu-section-header {
   display: flex;
@@ -243,6 +248,7 @@ html, body {
   box-shadow: var(--shadow-sm);
   cursor: pointer;
   transition: transform var(--transition), box-shadow var(--transition);
+  margin: 20px;
 }
 
 .menu-card:hover {
@@ -867,7 +873,8 @@ html, body {
 @media (max-width: 820px) {
   .layout { grid-template-columns: 1fr; }
   .sidebar, .cart-panel { display: none; }
-  .menu-grid { grid-template-columns: repeat(2, 1fr); }
+  .menu-grid { 
+    grid-template-columns: repeat(2, 1fr);}
 }
 
 /* ===== LOGOUT NAV BUTTON ===== */
