@@ -461,22 +461,16 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(loadUserOrders, 15000);
     loadUserOrders();
 
-// ── 11. GREETING ──────────────────────────────────────────
-    const nameEl = document.getElementById('user-name');
+const nameEl = document.getElementById('user-name');
     if (nameEl) {
         const storedName = sessionStorage.getItem('firstName');
-        console.log("Session Name Found:", storedName); // Debugging line
-
+        // If name exists and isn't a string "null"/"undefined"
         if (storedName && storedName !== 'undefined' && storedName !== 'null') {
             nameEl.textContent = storedName;
         } else {
-            // If no name is found, we keep it as 'User' or set to 'Foodie'
             nameEl.textContent = 'Foodie'; 
         }
     }
-
-// Call the function
-updateGreeting();
 
     // ── HELPER: Escape HTML to prevent XSS ───────────────────
     function escapeHtml(str) {

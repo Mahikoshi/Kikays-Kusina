@@ -43,20 +43,23 @@ if ($action === 'login') {
 
     // FIX: Plain-text comparison kept to match existing DB records.
     // To upgrade: store hashed passwords with password_hash() and verify with password_verify().
-    if ($user && $user['password'] === $password) {
-        // FIX: Regenerate session ID on login to prevent session fixation attacks
+if ($user && $user['password'] === $password) {
         session_regenerate_id(true);
 
         $_SESSION['role']       = $user['role'];
         $_SESSION['user_id']    = $user['id'];
+        
         $fullName               = $user['full_name'] ?? 'User';
         $nameParts              = explode(' ', trim($fullName));
-        $_SESSION['first_name'] = $nameParts[0];
+        
+        // FIX: Use $nameParts instead of the undefined $firstName
+        $firstName              = $nameParts[0]; 
+        $_SESSION['first_name'] = $firstName;
 
         echo json_encode([
             "status"    => "success",
             "role"      => $user['role'],
-            "firstName" => $_SESSION['first_name']
+            "firstName" => $firstName // Send this so sessionStorage can pick it up
         ]);
     } else {
         echo json_encode(["status" => "error", "message" => "Invalid email or password."]);
