@@ -129,14 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const viewAllBtn = document.getElementById('view-all-btn');
-    if (viewAllBtn) {
-        viewAllBtn.addEventListener('click', () => {
-            categoryBtns.forEach(b => b.classList.remove('active'));
-            currentCategory = 'all';
-            renderMenu('all', searchInput.value);
-        });
-    }
 
     // ── 4. SEARCH ─────────────────────────────────────────────
     searchInput.addEventListener('input', (e) => {
