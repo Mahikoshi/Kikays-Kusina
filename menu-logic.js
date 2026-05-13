@@ -457,15 +457,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    document.getElementById('refresh-orders-btn').addEventListener('click', loadUserOrders);
-
     // Poll every 15 seconds to catch admin status changes live
     setInterval(loadUserOrders, 15000);
     loadUserOrders();
 
-    // ── 11. GREETING ──────────────────────────────────────────
+// ── 11. GREETING ──────────────────────────────────────────
     const nameEl = document.getElementById('user-name');
-    if (nameEl) nameEl.textContent = sessionStorage.getItem('firstName') || 'User';
+    if (nameEl) {
+        const storedName = sessionStorage.getItem('firstName');
+        console.log("Session Name Found:", storedName); // Debugging line
+
+        if (storedName && storedName !== 'undefined' && storedName !== 'null') {
+            nameEl.textContent = storedName;
+        } else {
+            // If no name is found, we keep it as 'User' or set to 'Foodie'
+            nameEl.textContent = 'Foodie'; 
+        }
+    }
+
+// Call the function
+updateGreeting();
 
     // ── HELPER: Escape HTML to prevent XSS ───────────────────
     function escapeHtml(str) {
