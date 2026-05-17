@@ -1,0 +1,143 @@
+* { 
+    box-sizing: border-box; margin: 0; padding: 0; 
+}
+
+  .app { 
+  font-family: sans-serif;          
+  background: #ffffff;               
+  min-height: 420px; 
+  border-radius: 12px;            
+  overflow: hidden; 
+  border: 0.5px solid #e0e0e0;      
+}
+
+  .topbar { 
+  background: #D4A843; 
+  padding: 50px;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+    }
+
+  .topbar i { 
+    font-size: 22px; 
+    color: #1a1208; 
+    cursor: pointer; 
+    }
+
+  .body { 
+    padding: 28px 20px; 
+    }
+
+  .profile-row { 
+    display: flex; 
+    align-items: center; 
+    gap: 18px; 
+    }
+
+  .avatar { 
+    width: 72px; 
+    height: 72px; 
+    border-radius: 50%;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    flex-shrink: 0; 
+    }
+
+  .avatar i { 
+    font-size: 36px; 
+    color: #D4A843; 
+    }
+
+  .info-card { 
+    flex: 1; 
+    background: #FDF5D8; 
+    border-radius: 12px; 
+    padding: 16px 18px; 
+    position: relative; 
+    display: flex; 
+    align-items: stretch; 
+    gap: 0; 
+    border: 0.5px solid #E8D68A; 
+    }
+
+  .info-main { 
+    flex: 1; 
+    padding-right: 18px; 
+    border-right: 1.5px solid #E0CB70; 
+    }
+
+  .info-main h2 { 
+    font-size: 20px; 
+    font-weight: bold; 
+    color: #3D2C24; 
+    margin-bottom: 1px;
+    }
+
+  .info-main p { 
+    font-size: 13px; 
+    color: #5a4a1a;    
+    line-height: 1.6; 
+    }
+
+  .material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24
+    }
+
+  .info-address { 
+    flex: 1.2; 
+    padding-left: 18px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    }
+
+  .address-label { 
+    display: flex; 
+    align-items: center; 
+    gap: 6px; 
+    font-size: 13px; 
+    font-weight: 500; 
+    color: #1a1208; 
+    margin-bottom: 4px; 
+    }
+
+  .address-label i { 
+    font-size: 14px; 
+    color: #B8860B; 
+    }
+
+  .address-label h2 { 
+    font-size: 18px; 
+    color: #B8860B; 
+    }
+
+  .info-address p { 
+    font-size: 13px; 
+    color: #3D2C24; 
+    margin-left: 20px;
+    }
+
+  .edit-btn { 
+    position: absolute; 
+    top: 12px; 
+    right: 12px; 
+    background: none;
+    border: none; 
+    cursor: pointer; 
+    padding: 4px; 
+    }
+
+  .edit-btn i { 
+    font-size: 18px; 
+    color: #5a4a1a; 
+    }
+
+  .edit-btn:hover i { 
+    color: #1a1208; 
+    }
