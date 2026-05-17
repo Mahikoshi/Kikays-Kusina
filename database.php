@@ -256,7 +256,7 @@ elseif ($action === 'get_profile') {
 
 // ── UPDATE USER PROFILE ──────────────────────────────────────
 elseif ($action === 'update_profile') {
-    if (!isset($_SESSION['user_id'])) {
+    if (!isset($_SESSION['user_id'])) { 
         http_response_code(401);
         die(json_encode(["status" => "error", "message" => "Not logged in."]));
     }
