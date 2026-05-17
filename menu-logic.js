@@ -14,14 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const subtotalEl       = document.getElementById('subtotal');
     const totalEl          = document.getElementById('total');
 
-    const addressModal     = document.getElementById('address-modal');
-    const addAddressBtn    = document.getElementById('add-address-btn');
-    const saveAddressBtn   = document.getElementById('save-address-btn');
-    const addressInput     = document.getElementById('address-input');
-    const addressDisplay   = document.getElementById('address-display');
     const addressText      = document.getElementById('address-text');
-    const editAddressBtn   = document.getElementById('edit-address-btn');
-    const removeAddressBtn = document.getElementById('remove-address-btn');
+    const addressSectionDisplay = document.getElementById('address-section-display');
 
     const checkoutModal    = document.getElementById('checkout-modal');
     const checkoutItemsList= document.getElementById('checkout-items-list');
@@ -51,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadMenu();
 
-    // ── 2. LOAD SAVED ADDRESS from addresses table ────────────
+    // ── 2. LOAD SAVED ADDRESS silently (used for checkout, displayed read-only) ─
     async function loadSavedAddress() {
         try {
             const fd = new FormData();
@@ -59,11 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const res  = await fetch('database.php', { method: 'POST', body: fd });
             const data = await res.json();
 
-            if (data.status === 'success') {
+            if (data.status === 'success' && addressText) {
                 savedAddressId = data.address_id;
                 addressText.textContent = data.full_address;
-                addressDisplay.classList.remove('hidden');
-                addAddressBtn.classList.add('hidden');
+                if (addressSectionDisplay) addressSectionDisplay.style.display = '';
             }
         } catch (err) {
             console.error("Address load error:", err);
@@ -196,58 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!checkoutModal.classList.contains('hidden')) syncCheckoutList();
     }
 
-    // ── 7. ADDRESS ────────────────────────────────────────────
-    // "Add Address" opens modal
-    addAddressBtn.addEventListener('click', () => {
-        addressInput.value = '';
-        addressModal.classList.remove('hidden');
-    });
-
-    // Save address → persist to addresses table, get back address_id
-    saveAddressBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const val = addressInput.value.trim();
-        if (!val) { alert("Please enter a delivery address."); return; }
-
-        try {
-            const fd = new FormData();
-            fd.append('action',       'save_address');
-            fd.append('full_address', val);
-            const res  = await fetch('database.php', { method: 'POST', body: fd });
-            const data = await res.json();
-
-            if (data.status === 'success') {
-                savedAddressId = data.address_id;
-                addressText.textContent = val;
-                addressDisplay.classList.remove('hidden');
-                addAddressBtn.classList.add('hidden');
-                addressModal.classList.add('hidden');
-            } else {
-                alert("Could not save address: " + (data.message || "Unknown error"));
-            }
-        } catch (err) {
-            console.error("Address save error:", err);
-            alert("Network error saving address.");
-        }
-    });
-
-    editAddressBtn.addEventListener('click', () => {
-        addressInput.value = addressText.textContent;
-        addressModal.classList.remove('hidden');
-    });
-
-    removeAddressBtn.addEventListener('click', () => {
-        savedAddressId          = null;
-        addressText.textContent = '';
-        addressDisplay.classList.add('hidden');
-        addAddressBtn.classList.remove('hidden');
-        addressInput.value = '';
-    });
-
-    document.getElementById('address-modal-close').addEventListener('click', () => {
-        addressModal.classList.add('hidden');
-    });
-
     // ── 8. CHECKOUT MODAL ─────────────────────────────────────
     function syncCheckoutList() {
         checkoutItemsList.innerHTML = '';
@@ -312,13 +253,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('place-order-btn').addEventListener('click', async () => {
         const activePayment   = document.querySelector('#gcash-btn.active, #cod-btn.active');
         const fulfillmentTime = document.getElementById('fulfillment-time').value;
-        const currentAddress  = addressText.textContent.trim();
 
         if (!fulfillmentTime) {
             alert("Please select a date and time!"); return;
         }
-        if (currentFulfillment === 'delivery' && !currentAddress) {
-            alert("Please add a delivery address!"); return;
+        if (currentFulfillment === 'delivery' && !savedAddressId) {
+            alert("Please add a delivery address in your Profile first!"); return;
         }
         if (!activePayment) {
             alert("Please select a payment method!"); return;
@@ -347,22 +287,9 @@ document.addEventListener('DOMContentLoaded', () => {
         fd.append('fulfillment_type', currentFulfillment);
         fd.append('fulfillment_time', fulfillmentTime);
 
-        // For delivery: send the persisted address_id (or address text as fallback)
-        if (currentFulfillment === 'delivery') {
-            if (savedAddressId) {
-                fd.append('address_id', savedAddressId);
-            } else {
-                // Address was typed but not yet saved — save it first
-                const saveFd = new FormData();
-                saveFd.append('action',       'save_address');
-                saveFd.append('full_address', currentAddress);
-                const saveRes  = await fetch('database.php', { method: 'POST', body: saveFd });
-                const saveData = await saveRes.json();
-                if (saveData.status === 'success') {
-                    savedAddressId = saveData.address_id;
-                    fd.append('address_id', savedAddressId);
-                }
-            }
+        // For delivery: send the persisted address_id from profile
+        if (currentFulfillment === 'delivery' && savedAddressId) {
+            fd.append('address_id', savedAddressId);
         }
 
         if (activePayment.dataset.method === 'gcash') {

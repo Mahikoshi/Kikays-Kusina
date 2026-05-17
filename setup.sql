@@ -48,9 +48,7 @@ INSERT IGNORE INTO `menu` (`id`, `name`, `description`, `price`, `category`, `im
 (8,  'Beef Caldereta',  'Hearty beef stew with tomatoes and bell peppers.',       180.00, 'beef',        'https://cdn.sanity.io/images/f3knbc2s/production/f...'),
 (9,  'Halo-Halo',       'The ultimate Filipino summer dessert.',                   85.00, 'dessert',     'https://assets.bonappetit.com/photos/60e46c6701084...'),
 (10, 'Leche Flan',      'Creamy caramel custard, silky smooth.',                   65.00, 'dessert',     'https://www.kawalingpinoy.com/wp-content/uploads/2...'),
-(11, 'Lechon Kawali',   'Crispy deep-fried pork belly — Best Seller!',            150.00, 'best_seller', 'https://www.allrecipes.com/thmb/PFfi1nM5cx4AsOfgu2.../'),
-(12, 'Party Package A', '5 dishes + rice good for 10 persons.',                   950.00, 'packages',    'https://images.pexels.com/photos/2092906/pexels-ph...'),
-(13, 'Party Package B', '8 dishes + rice good for 20 persons.',                 1800.00, 'packages',    'https://images.pexels.com/photos/2092906/pexels-ph...');
+(11, 'Lechon Kawali',   'Crispy deep-fried pork belly — Best Seller!',            150.00, 'best_seller', 'https://www.allrecipes.com/thmb/PFfi1nM5cx4AsOfgu2...');
 
 -- ── addresses ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS `addresses` (

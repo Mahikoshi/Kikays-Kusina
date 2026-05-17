@@ -74,7 +74,7 @@
                 <button class="cat-btn"         data-cat="dessert">    <span class="cat-icon">🍮</span> Dessert</button>
                 <button class="cat-btn"         data-cat="beef">       <span class="cat-icon">🥓</span> Beef</button>
                 <button class="cat-btn"         data-cat="best_seller"><span class="cat-icon">⭐</span> Best Seller</button>
-                <button class="cat-btn"         data-cat="packages">   <span class="cat-icon">📦</span> Packages</button>
+
             </nav>
         </aside>
 
@@ -111,17 +111,11 @@
         <aside class="cart-panel">
             <h2 class="cart-title">My Cart</h2>
             
-            <!-- ADDRESS -->
-            <div class="address-section">
-                <div id="address-display" class="address-display hidden">
-                    <p class="address-label">Delivery Address</p>
-                    <p id="address-text" class="address-text"></p>
-                    <div class="address-actions">
-                        <button id="edit-address-btn"   class="addr-action-btn edit-btn">Edit</button>
-                        <button id="remove-address-btn" class="addr-action-btn remove-btn">Remove</button>
-                    </div>
-                </div>
-                <button id="add-address-btn" class="add-address-btn">+ Add Address</button>
+            <!-- ADDRESS (read-only display, loaded from profile) -->
+            <div id="address-section-display" class="address-section" style="display:none;">
+                <p class="address-label">Delivery Address</p>
+                <p id="address-text" class="address-text"></p>
+                <a href="profile.html" style="font-size:12px;color:#5a5a1a;text-decoration:underline;">Edit in Profile →</a>
             </div>
 
             <!-- CART ITEMS -->
@@ -160,16 +154,6 @@
         </div>
     </div>
 
-    <!-- ADDRESS MODAL -->
-    <div id="address-modal" class="modal-overlay hidden">
-        <div class="modal-card address-modal-card">
-            <button id="address-modal-close" class="modal-close">✕</button>
-            <h3 class="modal-name">Delivery Address</h3>
-            <textarea id="address-input" class="address-input"
-                      placeholder="Enter your full delivery address..." rows="4"></textarea>
-            <button id="save-address-btn" class="modal-add-cart-btn">Save Address</button>
-        </div>
-    </div>
 
     <!-- CHECKOUT MODAL -->
     <div id="checkout-modal" class="modal-overlay hidden">
