@@ -17,24 +17,43 @@
 
 <body class="home-page">
 
+    <!-- Fixed profile circle — top left, outside nav -->
+    <a href="profile.html" title="Go to Profile" style="
+        position: absolute; top: 18px; left: 22px; z-index: 200;
+        width: 48px; height: 48px; border-radius: 50%;
+        overflow: hidden; display: block;
+        border: 3px solid #fcf6bd;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.28);
+        transition: transform 0.2s, box-shadow 0.2s;
+    " onmouseover="this.style.transform='scale(1.1)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.38)'"
+       onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 14px rgba(0,0,0,0.28)'">
+        <img src="Pics/profile.png" alt="Profile"
+             style="width:100%;height:100%;object-fit:cover;display:block;">
+    </a>
+
+    <!-- Fixed logout button — top right, outside nav -->
+    <a href="#" onclick="logoutUser(); return false;" title="Logout" style="
+        position: absolute; top: 18px; right: 22px; z-index: 200;
+        display: flex; align-items: center; gap: 7px;
+        padding: 10px 20px; border-radius: 50px;
+        background: #fcf6bd; color: #3D2C24;
+        font-weight: 700; font-size: 0.88rem;
+        text-decoration: none;
+        border: 2px solid rgba(61,44,36,0.35);
+        box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+        transition: background 0.2s, color 0.2s;
+    " onmouseover="this.style.background='#3D2C24';this.style.color='#fcf6bd'"
+       onmouseout="this.style.background='#fcf6bd';this.style.color='#3D2C24'">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </a>
+
     <header class="header-container">
         <nav class="nav-bar">
-            <!-- LEFT: Profile button -->
-            <a href="profile.html" class="nav-profile-btn">
-                <i class="fa-solid fa-circle-user"></i> Profile
-            </a>
-
-            <!-- CENTER: Nav links -->
             <ul class="nav-links">
                 <li><a href="#">Home</a></li>
                 <li><a href="menu.html">Menu</a></li>
                 <li><a href="#about-section">About Us</a></li>
             </ul>
-
-            <!-- RIGHT: Logout -->
-            <a href="#" onclick="logoutUser(); return false;" class="nav-logout-btn">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout
-            </a>
         </nav>
     </header>
 
@@ -52,8 +71,8 @@
                 <img src="Pics/porke.png" alt="Crispy Roasted Pork">
             </div>
             <div class="about-card">
-                <p class="card-subtitle">Premium Catering &amp; Short Order Delights</p>
-                <h3 class="card-brand">SAVOR <br>&amp;<br> SOUL</h3>
+                <p class="card-subtitle">Premium Catering & Short Order Delights</p>
+                <h3 class="card-brand">SAVOR <br>&<br> SOUL</h3>
                 <p class="card-description">
                     Bringing gourmet flavors to your most meaningful moments.<br><br>
                     From corporate meetings to intimate celebrations, we craft affordable,
@@ -99,7 +118,7 @@
                     </div>
                     <div class="map-container">
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3925.651060700662!2d123.9528084!3d10.2896735!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a99b6fa5c429b7%3A0x6ac23cab3fae4d1f!2sKIKAYS&#39;%20KUSINA!5e0!3m2!1sen!2sph!4v1778330783689!5m2!1sen!2sph"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3925.651060700662!2d123.9528084!3d10.2896735!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a99b6fa5c429b7%3A0x6ac23cab3fae4d1f!2sKIKAYS'%20KUSINA!5e0!3m2!1sen!2sph!4v1778330783689!5m2!1sen!2sph"
                             width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy"
                             referrerpolicy="no-referrer-when-downgrade">
                         </iframe>
@@ -135,7 +154,7 @@
     <section id="about-section" class="info-section">
         <div class="info-container">
             <div class="contact-info">
-                <h2>Contact &amp; Info</h2>
+                <h2>Contact & Info</h2>
                 <p>📍 <strong>Location:</strong><br>Babag 1, Lapu-Lapu City, Philippines, 6015</p>
                 <p>⏰ <strong>Hours:</strong><br>Mon - Sat: 9:00 AM - 8:00 PM<br>Sunday: Closed</p>
                 <p>📞 <strong>Reach Us:</strong><br>Phone: +63 912 345 6789<br>Email: hello@kikayskusina.com</p>
