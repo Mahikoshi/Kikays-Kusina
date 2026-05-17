@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- FIX: Auth guard only checks that userRole exists (not admin-specific).
-         Admin visiting home.html will be redirected — only 'user' role stays. -->
     <script>
         (function () {
             var role = sessionStorage.getItem('userRole');
@@ -23,16 +21,25 @@
 <body class="home-page">
     <header class="header-container">
         <nav class="nav-bar">
+            <!-- Left: nav links -->
             <ul class="nav-links">
                 <li><a href="#">Home</a></li>
                 <li><a href="menu.html">Menu</a></li>
                 <li><a href="#about-section">About Us</a></li>
             </ul>
+
+            <!-- Right: profile + logout -->
+            <div class="nav-actions">
+                <a href="profile.html" class="nav-profile-btn" title="My Profile">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="#" onclick="logoutUser(); return false;" class="nav-logout-btn" title="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
         </nav>
-        <!-- FIX: calls logoutUser() defined in script.js which properly destroys PHP session -->
-        <a href="#" onclick="logoutUser(); return false;" class="logout-btn">
-            <i class="fa-solid fa-right-from-bracket"></i> Logout
-        </a>
     </header>
 
     <main class="hero">
@@ -123,7 +130,6 @@
                             <label for="contact-message">Message</label>
                             <textarea id="contact-message" rows="5" placeholder="Type Here..."></textarea>
                         </div>
-                        <!-- FIX: "Send Now" now shows a confirmation alert (was completely dead before) -->
                         <button type="button" class="btn-send" id="sendContactBtn">Send Now</button>
                     </div>
                 </div>
@@ -149,7 +155,6 @@
 
     <script src="script.js"></script>
     <script>
-        // FIX: "Send Now" contact button was completely non-functional — now gives feedback
         document.getElementById('sendContactBtn').addEventListener('click', function () {
             var name    = document.getElementById('contact-name').value.trim();
             var email   = document.getElementById('contact-email').value.trim();
@@ -160,8 +165,6 @@
                 alert("Please fill in your name, email, and message.");
                 return;
             }
-            // In a real deployment, send this to a mail endpoint.
-            // For now, we confirm receipt to the user.
             alert("Thank you, " + name + "! Your message has been received. We'll get back to you soon.");
             document.getElementById('contact-name').value    = '';
             document.getElementById('contact-email').value   = '';

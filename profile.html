@@ -1,180 +1,385 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        (function () {
+            var role = sessionStorage.getItem('userRole');
+            if (!role) {
+                window.location.replace("login.html");
+            } else if (role === 'admin') {
+                window.location.replace("admin.html");
+            }
+        }());
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    <title>Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Profile | Kikay's Kusina</title>
+    <style>
+        /* ── Profile page nav ─────────────────────────── */
+        .profile-navbar {
+            background-color: #fcf6bd;
+            border-bottom: 2px solid rgba(47, 44, 44, 0.15);
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        }
+
+        .profile-navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #3D2C24;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 8px 18px;
+            border-radius: 50px;
+            border: 2px solid rgba(61, 44, 36, 0.35);
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .profile-back-btn:hover {
+            background-color: #3D2C24;
+            color: #fcf6bd;
+            border-color: #3D2C24;
+        }
+
+        .profile-nav-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #3D2C24;
+            letter-spacing: 0.3px;
+        }
+
+        .profile-nav-title span {
+            color: #C57B5A;
+        }
+
+        .profile-logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            text-decoration: none;
+            color: #3D2C24;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 8px 18px;
+            border-radius: 50px;
+            border: 2px solid rgba(61, 44, 36, 0.35);
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .profile-logout-btn:hover {
+            background-color: #C57B5A;
+            color: #fff;
+            border-color: #C57B5A;
+        }
+
+        /* ── Toast notification ───────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #3D2C24;
+            color: #fcf6bd;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: transform 0.35s ease, opacity 0.35s ease;
+            z-index: 999;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { background: #10b981; color: #fff; }
+        .toast.error   { background: #ef4444; color: #fff; }
+
+        /* ── Page wrapper ─────────────────────────────── */
+        body {
+            background: #f7f3ec;
+            margin: 0;
+        }
+
+        .profile-page-wrapper {
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 0 20px 60px;
+        }
+    </style>
 </head>
 <body>
-<div class="app">
-  <div class="topbar">
-    <a href="home.html">
-      <img src="Pics/arrow.png" alt="arrow" style="width:24px;height:24px;object-fit:contain;" />
-    </a>
-    <i class="ti ti-menu-2" aria-label="Menu"></i>
-  </div>
-  <div class="body">
-    <div class="profile-row">
-      <div class="avatar">
-        <img src="Pics/profile.png" alt="User avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
-      </div>
-      <div class="info-card">
 
-        <!-- VIEW MODE -->
-        <div id="view-mode" style="display:flex;flex:1;align-items:stretch;">
-          <div class="info-main">
-            <h2 id="display-name">Loading...</h2>
-            <p id="display-email"></p>
-            <p id="display-phone"></p>
-          </div>
-          <div class="info-address">
-            <div class="address-label">
-              <i class="ti ti-map-pin" aria-hidden="true"></i>
-              <h2>Address</h2>
-            </div>
-            <p id="display-address">—</p>
-          </div>
+    <!-- TOP NAV -->
+    <nav class="profile-navbar">
+        <div class="profile-navbar-left">
+            <a href="home.html" class="profile-back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Home
+            </a>
+            <a href="menu.html" class="profile-back-btn" style="border-color:#C57B5A; color:#C57B5A;">
+                <i class="fa-solid fa-utensils"></i> Menu
+            </a>
         </div>
 
-        <!-- EDIT MODE (hidden by default) -->
-        <div id="edit-mode" style="display:none;flex:1;flex-direction:column;gap:8px;">
-          <input id="edit-name"    type="text"  placeholder="Full name" style="padding:6px;border:1px solid #E0CB70;border-radius:6px;font-size:13px;" />
-          <input id="edit-phone"   type="text"  placeholder="Phone" style="padding:6px;border:1px solid #E0CB70;border-radius:6px;font-size:13px;" />
-          <input id="edit-address" type="text"  placeholder="Address" style="padding:6px;border:1px solid #E0CB70;border-radius:6px;font-size:13px;" />
-          <button onclick="saveProfile()" style="background:#D4A843;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;color:#1a1208;font-weight:500;">Save</button>
-          <button onclick="cancelEdit()" style="background:none;border:1px solid #ccc;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">Cancel</button>
-        </div>
+        <p class="profile-nav-title">Kikay's <span>Kusina</span></p>
 
-        <button class="edit-btn" onclick="toggleEdit()" aria-label="Edit profile">
-          <i class="ti ti-edit" aria-hidden="true"></i>
+        <button class="profile-logout-btn" onclick="profileLogout()">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
         </button>
+    </nav>
 
-      </div>
+    <!-- PROFILE BODY -->
+    <div class="profile-page-wrapper">
+        <div class="app">
+            <div class="body">
+                <div class="profile-row">
+                    <div class="avatar">
+                        <img src="Pics/profile.png" alt="User avatar"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                             style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
+                        <i class="ti ti-user" style="display:none;font-size:36px;color:#D4A843;"></i>
+                    </div>
+
+                    <div class="info-card">
+                        <!-- VIEW MODE -->
+                        <div id="view-mode" style="display:flex;flex:1;align-items:stretch;">
+                            <div class="info-main">
+                                <h2 id="display-name">Loading…</h2>
+                                <p id="display-email" style="color:#888;font-size:13px;"></p>
+                                <p id="display-phone" style="color:#888;font-size:13px;margin-top:2px;"></p>
+                            </div>
+                            <div class="info-address">
+                                <div class="address-label">
+                                    <i class="ti ti-map-pin" aria-hidden="true"></i>
+                                    <h2>Address</h2>
+                                </div>
+                                <p id="display-address">—</p>
+                            </div>
+                        </div>
+
+                        <!-- EDIT MODE -->
+                        <div id="edit-mode" style="display:none;flex:1;flex-direction:column;gap:8px;">
+                            <input id="edit-name"    type="text" placeholder="Full name"
+                                   style="padding:8px 12px;border:1px solid #E0CB70;border-radius:8px;font-size:13px;" />
+                            <input id="edit-phone"   type="text" placeholder="Phone"
+                                   style="padding:8px 12px;border:1px solid #E0CB70;border-radius:8px;font-size:13px;" />
+                            <input id="edit-address" type="text" placeholder="Delivery address"
+                                   style="padding:8px 12px;border:1px solid #E0CB70;border-radius:8px;font-size:13px;" />
+                            <div style="display:flex;gap:8px;margin-top:4px;">
+                                <button id="save-btn" onclick="saveProfile()"
+                                        style="flex:1;background:#D4A843;border:none;border-radius:8px;padding:8px;cursor:pointer;font-size:13px;color:#1a1208;font-weight:700;">
+                                    Save Changes
+                                </button>
+                                <button onclick="cancelEdit()"
+                                        style="flex:1;background:none;border:1px solid #ccc;border-radius:8px;padding:8px;cursor:pointer;font-size:13px;">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+
+                        <button class="edit-btn" onclick="toggleEdit()" aria-label="Edit profile">
+                            <i class="ti ti-edit" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FAVORITES & HISTORY -->
+                <div class="sections-row">
+                    <div class="section-box">
+                        <h2 class="section-title">Favorites</h2>
+                        <div class="items-scroll" id="favorites-list">
+                            <p style="font-size:13px;color:#888;">No favorites yet.</p>
+                        </div>
+                    </div>
+
+                    <div class="section-box">
+                        <h2 class="section-title">Order History</h2>
+                        <div class="items-scroll" id="history-list">
+                            <p style="font-size:13px;color:#888;">Loading orders…</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="sections-row">
 
-  <div class="section-box">
-    <h2 class="section-title">Favorites</h2>
-    <div class="item-card">
-      <div class="item-top">
-        <span class="item-name">Adobo</span>
-        <span class="item-qty">2x</span>
-      </div>
-      <p class="item-desc">description</p>
-      <p class="item-price">₱0.00</p>
-    </div>
-    <div class="item-card">
-      <div class="item-top">
-        <span class="item-name">Paksiw</span>
-        <span class="item-qty">2x</span>
-      </div>
-      <p class="item-desc">description</p>
-      <p class="item-price">₱0.00</p>
-    </div>
-    <div class="item-card">
-      <div class="item-top">
-        <span class="item-name">Paksiw</span>
-        <span class="item-qty">2x</span>
-      </div>
-      <p class="item-desc">description</p>
-      <p class="item-price">₱0.00</p>
-    </div>
-    <div class="item-card">
-      <div class="item-top">
-        <span class="item-name">Paksiw</span>
-        <span class="item-qty">2x</span>
-      </div>
-      <p class="item-desc">description</p>
-      <p class="item-price">₱0.00</p>
-    </div>
-    <div class="item-card">
-      <div class="item-top">
-        <span class="item-name">Paksiw</span>
-        <span class="item-qty">2x</span>
-      </div>
-      <p class="item-desc">description</p>
-      <p class="item-price">₱0.00</p>
-    </div>
-  </div>
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
 
-  <div class="section-box">
-    <h2 class="section-title">History</h2>
-    <div class="item-card">
-      <div class="item-top">
-        <span class="item-name">Adobo</span>
-        <span class="item-qty">2x</span>
-      </div>
-      <p class="item-desc">description</p>
-      <p class="item-price">₱0.00</p>
-    </div>
-    <div class="item-card">
-      <div class="item-top">
-        <span class="item-name">Paksiw</span>
-        <span class="item-qty">2x</span>
-      </div>
-      <p class="item-desc">description</p>
-      <p class="item-price">₱0.00</p>
-    </div>
-  </div>
+    <script src="script.js"></script>
+    <script>
+        // ── Toast ──────────────────────────────────────────────
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className   = 'toast ' + type + ' show';
+            setTimeout(() => { t.className = 'toast ' + type; }, 3000);
+        }
 
-</div>
-  </div>
-</div>
+        // ── Logout ─────────────────────────────────────────────
+        async function profileLogout() {
+            const fd = new FormData();
+            fd.append('action', 'logout');
+            try { await fetch('database.php', { method: 'POST', body: fd }); } catch (_) {}
+            sessionStorage.clear();
+            window.location.replace('login.html');
+        }
 
-<script>
-  // Load profile on page open
-  fetch('database.php', {
-    method: 'POST',
-    body: new URLSearchParams({ action: 'get_profile' })
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.status === 'success') {
-      const u = data.user;
-      document.getElementById('display-name').textContent    = u.full_name || '—';
-      document.getElementById('display-email').textContent   = u.email     || '—';
-      document.getElementById('display-phone').textContent   = u.phone     || '—';
-      document.getElementById('display-address').textContent = u.address   || '—';
-      // Pre-fill edit fields
-      document.getElementById('edit-name').value    = u.full_name || '';
-      document.getElementById('edit-phone').value   = u.phone     || '';
-      document.getElementById('edit-address').value = u.address   || '';
-    }
-  });
+        // ── Load Profile ───────────────────────────────────────
+        async function loadProfile() {
+            try {
+                const fd = new FormData();
+                fd.append('action', 'get_profile');
+                const res  = await fetch('database.php', { method: 'POST', body: fd });
+                const data = await res.json();
 
-  function toggleEdit() {
-    document.getElementById('view-mode').style.display = 'none';
-    document.getElementById('edit-mode').style.display = 'flex';
-  }
+                if (data.status === 'success') {
+                    const u = data.user;
+                    document.getElementById('display-name').textContent    = u.full_name || '—';
+                    document.getElementById('display-email').textContent   = u.email     || '—';
+                    document.getElementById('display-phone').textContent   = u.phone     || '—';
+                    document.getElementById('display-address').textContent = u.address   || '—';
+                    // Pre-fill edit inputs
+                    document.getElementById('edit-name').value    = u.full_name || '';
+                    document.getElementById('edit-phone').value   = u.phone     || '';
+                    document.getElementById('edit-address').value = u.address   || '';
+                } else {
+                    showToast('Session expired. Redirecting…', 'error');
+                    setTimeout(() => window.location.replace('login.html'), 1800);
+                }
+            } catch (err) {
+                showToast('Could not load profile.', 'error');
+            }
+        }
 
-  function cancelEdit() {
-    document.getElementById('edit-mode').style.display = 'none';
-    document.getElementById('view-mode').style.display = 'flex';
-  }
+        // ── Edit Controls ──────────────────────────────────────
+        function toggleEdit() {
+            document.getElementById('view-mode').style.display = 'none';
+            document.getElementById('edit-mode').style.display = 'flex';
+        }
 
-  function saveProfile() {
-    const fullName = document.getElementById('edit-name').value.trim();
-    const phone    = document.getElementById('edit-phone').value.trim();
-    const address  = document.getElementById('edit-address').value.trim();
+        function cancelEdit() {
+            document.getElementById('edit-mode').style.display = 'none';
+            document.getElementById('view-mode').style.display = 'flex';
+        }
 
-    fetch('database.php', {
-      method: 'POST',
-      body: new URLSearchParams({ action: 'update_profile', fullName, phone, address })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.status === 'success') {
-        document.getElementById('display-name').textContent    = fullName || '—';
-        document.getElementById('display-phone').textContent   = phone    || '—';
-        document.getElementById('display-address').textContent = address  || '—';
-        cancelEdit();
-      } else {
-        alert('Failed to save: ' + data.message);
-      }
-    });
-  }
-</script>
+        // ── Save Profile → database.php (update_profile) ───────
+        async function saveProfile() {
+            const btn     = document.getElementById('save-btn');
+            const fullName = document.getElementById('edit-name').value.trim();
+            const phone    = document.getElementById('edit-phone').value.trim();
+            const address  = document.getElementById('edit-address').value.trim();
+
+            if (!fullName) {
+                showToast('Name cannot be empty.', 'error');
+                return;
+            }
+
+            btn.textContent = 'Saving…';
+            btn.disabled    = true;
+
+            try {
+                const fd = new FormData();
+                fd.append('action',   'update_profile');
+                fd.append('fullName', fullName);
+                fd.append('phone',    phone);
+                fd.append('address',  address);
+
+                const res  = await fetch('database.php', { method: 'POST', body: fd });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    document.getElementById('display-name').textContent    = fullName || '—';
+                    document.getElementById('display-phone').textContent   = phone    || '—';
+                    document.getElementById('display-address').textContent = address  || '—';
+                    cancelEdit();
+                    showToast('✓ Profile updated successfully!', 'success');
+                } else {
+                    showToast(data.message || 'Failed to save.', 'error');
+                }
+            } catch (err) {
+                showToast('Server error. Try again.', 'error');
+            } finally {
+                btn.textContent = 'Save Changes';
+                btn.disabled    = false;
+            }
+        }
+
+        // ── Load Order History ─────────────────────────────────
+        async function loadHistory() {
+            try {
+                const fd = new FormData();
+                fd.append('action', 'get_user_orders');
+                const res    = await fetch('database.php', { method: 'POST', body: fd });
+                const orders = await res.json();
+
+                const list = document.getElementById('history-list');
+                if (!Array.isArray(orders) || orders.length === 0) {
+                    list.innerHTML = '<p style="font-size:13px;color:#888;">No orders yet.</p>';
+                    return;
+                }
+
+                list.innerHTML = orders.map(o => {
+                    const statusColor = {
+                        pending:   '#D4A843',
+                        completed: '#10b981',
+                        cancelled: '#ef4444',
+                        received:  '#6366f1'
+                    }[(o.status || '').toLowerCase()] || '#888';
+
+                    const total = parseFloat(o.total || 0).toFixed(2);
+                    const date  = o.created_at
+                        ? new Date(o.created_at.replace(' ', 'T'))
+                            .toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : '—';
+
+                    return `
+                        <div class="item-card">
+                            <div class="item-top">
+                                <span class="item-name">Order #${o.id}</span>
+                                <span style="font-size:12px;font-weight:700;color:${statusColor};
+                                             background:${statusColor}18;padding:3px 10px;border-radius:20px;">
+                                    ${o.status || '—'}
+                                </span>
+                            </div>
+                            <p class="item-desc">${o.items || '—'}</p>
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+                                <span style="font-size:12px;color:#888;">${date}</span>
+                                <span class="item-price">₱${total}</span>
+                            </div>
+                        </div>`;
+                }).join('');
+            } catch (err) {
+                document.getElementById('history-list').innerHTML =
+                    '<p style="font-size:13px;color:#888;">Could not load orders.</p>';
+            }
+        }
+
+        // ── Init ───────────────────────────────────────────────
+        loadProfile();
+        loadHistory();
+    </script>
 </body>
 </html>
