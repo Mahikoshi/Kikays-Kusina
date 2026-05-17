@@ -884,65 +884,6 @@ html, body {
   font-weight: 700;
 }
 
-/* ===== ACTIVE ORDERS PANEL ===== */
-.active-orders-section {
-  margin-top: 16px;
-  border-top: 2px solid var(--cream-dark);
-  padding-top: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.active-orders-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.active-orders-title {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--olive-dark);
-  letter-spacing: 0.3px;
-}
-
-.refresh-orders-btn {
-  background: var(--cream-dark);
-  border: none;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background var(--transition), transform var(--transition);
-  color: var(--olive-dark);
-}
-.refresh-orders-btn:hover { background: var(--olive-dark); color: var(--cream); transform: rotate(180deg); }
-
-.active-orders-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: 420px;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-
-.active-orders-list::-webkit-scrollbar { width: 4px; }
-.active-orders-list::-webkit-scrollbar-thumb { background: var(--cream-dark); border-radius: 4px; }
-
-.no-orders-msg {
-  font-size: 12px;
-  color: var(--gray-400);
-  text-align: center;
-  padding: 12px 0;
-  font-style: italic;
-}
-
 /* ── ORDER CARD ── */
 .order-card {
   background: var(--white);
