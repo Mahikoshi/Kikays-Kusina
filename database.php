@@ -242,6 +242,33 @@ elseif ($action === 'update_order_status') {
     echo json_encode(["status" => "success", "message" => "Order updated to $status."]);
 }
 
+// ── GET USER PROFILE ─────────────────────────────────────────
+elseif ($action === 'get_profile') {
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        die(json_encode(["status" => "error", "message" => "Not logged in."]));
+    }
+    $stmt = $pdo->prepare("SELECT full_name, email, phone, address FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $user = $stmt->fetch();
+    echo json_encode(["status" => "success", "user" => $user]);
+}
+
+// ── UPDATE USER PROFILE ──────────────────────────────────────
+elseif ($action === 'update_profile') {
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        die(json_encode(["status" => "error", "message" => "Not logged in."]));
+    }
+    $fullName = trim($_POST['fullName'] ?? '');
+    $phone    = trim($_POST['phone']    ?? '');
+    $address  = trim($_POST['address']  ?? '');
+
+    $stmt = $pdo->prepare("UPDATE users SET full_name = ?, phone = ?, address = ? WHERE id = ?");
+    $stmt->execute([$fullName, $phone, $address, $_SESSION['user_id']]);
+    echo json_encode(["status" => "success", "message" => "Profile updated."]);
+}
+
 // ── 10. LOGOUT ────────────────────────────────────────────────
 elseif ($action === 'logout') {
     // FIX: Properly destroy only this user's session — other users unaffected

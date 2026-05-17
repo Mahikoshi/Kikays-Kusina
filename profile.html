@@ -8,37 +8,106 @@
     <title>Profile</title>
 </head>
 <body>
-    <div class="app">
+<div class="app">
   <div class="topbar">
-   <a href="home.html">
-    <img src="Pics\arrow.png" alt="arrow" style="width: 24px; height: 24px; object-fit: contain;" />
-   </a>
+    <a href="home.html">
+      <img src="Pics/arrow.png" alt="arrow" style="width:24px;height:24px;object-fit:contain;" />
+    </a>
     <i class="ti ti-menu-2" aria-label="Menu"></i>
   </div>
   <div class="body">
     <div class="profile-row">
       <div class="avatar">
-        <img src="Pics\profile.png" alt="User avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;"/>
-    </div>
+        <img src="Pics/profile.png" alt="User avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
+      </div>
       <div class="info-card">
-        <div class="info-main">
-          <h2>User name</h2>
-          <p>@email</p>
-          <p>091234567</p>
-        </div>
-        <div class="info-address">
-          <div class="address-label">
-            <i class="ti ti-map-pin" aria-hidden="true"></i>
-            <h2>Address</h2>
+
+        <!-- VIEW MODE -->
+        <div id="view-mode" style="display:flex;flex:1;align-items:stretch;">
+          <div class="info-main">
+            <h2 id="display-name">Loading...</h2>
+            <p id="display-email"></p>
+            <p id="display-phone"></p>
           </div>
-          <p>example address, adress, adress</p>
+          <div class="info-address">
+            <div class="address-label">
+              <i class="ti ti-map-pin" aria-hidden="true"></i>
+              <h2>Address</h2>
+            </div>
+            <p id="display-address">—</p>
+          </div>
         </div>
-        <button class="edit-btn" aria-label="Edit profile">
+
+        <!-- EDIT MODE (hidden by default) -->
+        <div id="edit-mode" style="display:none;flex:1;flex-direction:column;gap:8px;">
+          <input id="edit-name"    type="text"  placeholder="Full name" style="padding:6px;border:1px solid #E0CB70;border-radius:6px;font-size:13px;" />
+          <input id="edit-phone"   type="text"  placeholder="Phone" style="padding:6px;border:1px solid #E0CB70;border-radius:6px;font-size:13px;" />
+          <input id="edit-address" type="text"  placeholder="Address" style="padding:6px;border:1px solid #E0CB70;border-radius:6px;font-size:13px;" />
+          <button onclick="saveProfile()" style="background:#D4A843;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;color:#1a1208;font-weight:500;">Save</button>
+          <button onclick="cancelEdit()" style="background:none;border:1px solid #ccc;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;">Cancel</button>
+        </div>
+
+        <button class="edit-btn" onclick="toggleEdit()" aria-label="Edit profile">
           <i class="ti ti-edit" aria-hidden="true"></i>
         </button>
+
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  // Load profile on page open
+  fetch('database.php', {
+    method: 'POST',
+    body: new URLSearchParams({ action: 'get_profile' })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.status === 'success') {
+      const u = data.user;
+      document.getElementById('display-name').textContent    = u.full_name || '—';
+      document.getElementById('display-email').textContent   = u.email     || '—';
+      document.getElementById('display-phone').textContent   = u.phone     || '—';
+      document.getElementById('display-address').textContent = u.address   || '—';
+      // Pre-fill edit fields
+      document.getElementById('edit-name').value    = u.full_name || '';
+      document.getElementById('edit-phone').value   = u.phone     || '';
+      document.getElementById('edit-address').value = u.address   || '';
+    }
+  });
+
+  function toggleEdit() {
+    document.getElementById('view-mode').style.display = 'none';
+    document.getElementById('edit-mode').style.display = 'flex';
+  }
+
+  function cancelEdit() {
+    document.getElementById('edit-mode').style.display = 'none';
+    document.getElementById('view-mode').style.display = 'flex';
+  }
+
+  function saveProfile() {
+    const fullName = document.getElementById('edit-name').value.trim();
+    const phone    = document.getElementById('edit-phone').value.trim();
+    const address  = document.getElementById('edit-address').value.trim();
+
+    fetch('database.php', {
+      method: 'POST',
+      body: new URLSearchParams({ action: 'update_profile', fullName, phone, address })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'success') {
+        document.getElementById('display-name').textContent    = fullName || '—';
+        document.getElementById('display-phone').textContent   = phone    || '—';
+        document.getElementById('display-address').textContent = address  || '—';
+        cancelEdit();
+      } else {
+        alert('Failed to save: ' + data.message);
+      }
+    });
+  }
+</script>
 </body>
 </html>
