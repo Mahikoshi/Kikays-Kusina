@@ -4,11 +4,8 @@
     <script>
         (function () {
             var role = sessionStorage.getItem('userRole');
-            if (!role) {
-                window.location.replace("login.html");
-            } else if (role === 'admin') {
-                window.location.replace("admin.html");
-            }
+            if (!role) { window.location.replace("login.html"); }
+            else if (role === 'admin') { window.location.replace("admin.html"); }
         }());
     </script>
     <meta charset="UTF-8">
@@ -19,26 +16,25 @@
 </head>
 
 <body class="home-page">
+
     <header class="header-container">
         <nav class="nav-bar">
-            <!-- Left: nav links -->
+            <!-- LEFT: Profile button -->
+            <a href="profile.html" class="nav-profile-btn">
+                <i class="fa-solid fa-circle-user"></i> Profile
+            </a>
+
+            <!-- CENTER: Nav links -->
             <ul class="nav-links">
                 <li><a href="#">Home</a></li>
                 <li><a href="menu.html">Menu</a></li>
                 <li><a href="#about-section">About Us</a></li>
             </ul>
 
-            <!-- Right: profile + logout -->
-            <div class="nav-actions">
-                <a href="profile.html" class="nav-profile-btn" title="My Profile">
-                    <i class="fa-solid fa-circle-user"></i>
-                    <span>Profile</span>
-                </a>
-                <a href="#" onclick="logoutUser(); return false;" class="nav-logout-btn" title="Logout">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
+            <!-- RIGHT: Logout -->
+            <a href="#" onclick="logoutUser(); return false;" class="nav-logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
         </nav>
     </header>
 
@@ -57,7 +53,7 @@
             </div>
             <div class="about-card">
                 <p class="card-subtitle">Premium Catering &amp; Short Order Delights</p>
-                <h3 class="card-brand">SAVOR <br> &amp; <br> SOUL</h3>
+                <h3 class="card-brand">SAVOR <br>&amp;<br> SOUL</h3>
                 <p class="card-description">
                     Bringing gourmet flavors to your most meaningful moments.<br><br>
                     From corporate meetings to intimate celebrations, we craft affordable,
@@ -71,7 +67,6 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
     <section class="contact-section">
         <div class="contact-header">
             <h1>Contact Us</h1>
@@ -158,9 +153,7 @@
         document.getElementById('sendContactBtn').addEventListener('click', function () {
             var name    = document.getElementById('contact-name').value.trim();
             var email   = document.getElementById('contact-email').value.trim();
-            var subject = document.getElementById('contact-subject').value.trim();
             var message = document.getElementById('contact-message').value.trim();
-
             if (!name || !email || !message) {
                 alert("Please fill in your name, email, and message.");
                 return;

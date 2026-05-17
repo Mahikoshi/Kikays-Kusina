@@ -198,29 +198,22 @@ body {
 
 /* Start of CSS for Home Page */
 
-/* ── HOME PAGE NAV ACTIONS (profile + logout) ──────────── */
-.home-page .nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-left: 32px;
-}
-
+/* ── HOME NAV: profile (left) + logout (right) ────────── */
 .home-page .nav-profile-btn,
 .home-page .nav-logout-btn {
     display: flex;
     align-items: center;
     gap: 7px;
-    padding: 10px 20px;
+    padding: 9px 20px;
     border-radius: 50px;
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    transition: background-color 0.2s ease, transform 0.15s ease;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
     white-space: nowrap;
+    cursor: pointer;
 }
 
-/* Profile button — warm amber fill */
 .home-page .nav-profile-btn {
     background-color: #C57B5A;
     color: #fff;
@@ -230,26 +223,18 @@ body {
 .home-page .nav-profile-btn:hover {
     background-color: #a85f40;
     border-color: #a85f40;
-    transform: translateY(-1px);
 }
 
-/* Logout button — ghost style */
 .home-page .nav-logout-btn {
     background-color: transparent;
     color: #3D2C24;
-    border: 2px solid rgba(61, 44, 36, 0.45);
+    border: 2px solid rgba(61, 44, 36, 0.4);
 }
 
 .home-page .nav-logout-btn:hover {
     background-color: #3D2C24;
     color: #fcf6bd;
     border-color: #3D2C24;
-    transform: translateY(-1px);
-}
-
-.home-page .nav-profile-btn i,
-.home-page .nav-logout-btn i {
-    font-size: 1rem;
 }
 
 
