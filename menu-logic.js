@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const proofInput       = document.getElementById('gcash-proof-input');
     const proofPreview     = document.getElementById('proof-preview');
     const uploadLabel      = document.getElementById('upload-label-text');
-    const activeOrdersList = document.getElementById('active-orders-list');
 
     // ── 1. FETCH MENU ─────────────────────────────────────────
     async function loadMenu() {
@@ -313,7 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 uploadLabel.textContent     = 'Click to upload screenshot';
                 document.getElementById('fulfillment-time').value = '';
                 document.getElementById('checkout-email').value   = '';
-                loadUserOrders();
                 alert("Order placed successfully! 🎉");
             } else {
                 alert("Error: " + (data.message || "Unknown error"));
@@ -326,118 +324,6 @@ document.addEventListener('DOMContentLoaded', () => {
             placeBtn.textContent = 'Place Order';
         }
     });
-
-    // ── 11. ACTIVE ORDERS PANEL ───────────────────────────────
-    function statusLabel(s) {
-        const map = {
-            'Pending':   { cls: 'order-status-pending',   icon: '⏳', text: 'Pending' },
-            'Completed': { cls: 'order-status-completed', icon: '✅', text: 'Ready / Completed' },
-            'Cancelled': { cls: 'order-status-cancelled', icon: '❌', text: 'Cancelled' },
-            'Received':  { cls: 'order-status-received',  icon: '🎉', text: 'Received' },
-        };
-        return map[s] || { cls: 'order-status-pending', icon: '⏳', text: s };
-    }
-
-    function fmtOrderDate(raw) {
-        if (!raw) return '';
-        const d = new Date(raw.includes('T') ? raw : raw.replace(' ', 'T'));
-        return isNaN(d) ? raw : d.toLocaleString('en-PH', {
-            month: 'short', day: 'numeric',
-            hour: '2-digit', minute: '2-digit', hour12: true
-        });
-    }
-
-    async function loadUserOrders() {
-        const fd = new FormData();
-        fd.append('action', 'get_user_orders');
-
-        try {
-            const res    = await fetch('database.php', { method: 'POST', body: fd });
-            const orders = await res.json();
-
-            if (!Array.isArray(orders) || orders.length === 0) {
-                activeOrdersList.innerHTML = '<p class="no-orders-msg">No orders yet.</p>';
-                return;
-            }
-
-            activeOrdersList.innerHTML = '';
-            orders.forEach(order => {
-                const sl   = statusLabel(order.status);
-                const card = document.createElement('div');
-                card.className       = 'order-card';
-                card.dataset.orderId = order.id;
-
-                // items comes as a GROUP_CONCAT string: "2x Adobo, 1x Lechon"
-                const itemChips = (order.items || '').split(',')
-                    .map(i => `<span class="order-item-chip">${escapeHtml(i.trim())}</span>`)
-                    .join('');
-
-                const receivedBtnHtml = order.status === 'Completed'
-                    ? `<button class="order-received-pill-btn" data-id="${order.id}">✓ Order Received</button>`
-                    : '';
-
-                // Use total_amount aliased as total in the query
-                const displayTotal = parseFloat(order.total || 0).toFixed(2);
-
-                card.innerHTML = `
-                    <div class="order-card-header">
-                        <span class="order-card-id">Order #${order.id}</span>
-                        <span class="order-card-status ${sl.cls}">${sl.icon} ${sl.text}</span>
-                    </div>
-                    <div class="order-card-items">${itemChips}</div>
-                    <div class="order-card-meta">
-                        <span class="order-card-type">${order.fulfillment_type === 'delivery' ? '🛵 Delivery' : '🏪 Pickup'}</span>
-                        <span class="order-card-total">₱${displayTotal}</span>
-                    </div>
-                    ${order.address ? `<div class="order-card-address">📍 ${escapeHtml(order.address)}</div>` : ''}
-                    ${order.fulfillment_time ? `<div class="order-card-time">🕐 ${fmtOrderDate(order.fulfillment_time)}</div>` : ''}
-                    <div class="order-placed-at">Placed: ${fmtOrderDate(order.created_at)}</div>
-                    ${receivedBtnHtml}
-                `;
-
-                const recBtn = card.querySelector('.order-received-pill-btn');
-                if (recBtn) {
-                    recBtn.addEventListener('click', () => markOrderReceived(order.id, card));
-                }
-
-                activeOrdersList.appendChild(card);
-            });
-        } catch (err) {
-            console.error("Orders fetch error:", err);
-        }
-    }
-
-    async function markOrderReceived(orderId, cardEl) {
-        const btn = cardEl.querySelector('.order-received-pill-btn');
-        if (btn) { btn.disabled = true; btn.textContent = 'Marking…'; }
-
-        const fd = new FormData();
-        fd.append('action',   'mark_order_received');
-        fd.append('order_id', orderId);
-
-        try {
-            const res  = await fetch('database.php', { method: 'POST', body: fd });
-            const data = await res.json();
-            if (data.status === 'success') {
-                const statusEl = cardEl.querySelector('.order-card-status');
-                if (statusEl) {
-                    statusEl.className   = 'order-card-status order-status-received';
-                    statusEl.textContent = '🎉 Received';
-                }
-                if (btn) btn.remove();
-            } else {
-                alert(data.message || "Could not mark as received.");
-                if (btn) { btn.disabled = false; btn.textContent = '✓ Order Received'; }
-            }
-        } catch (err) {
-            console.error("markOrderReceived error:", err);
-            if (btn) { btn.disabled = false; btn.textContent = '✓ Order Received'; }
-        }
-    }
-
-    // Poll every 15 seconds to catch admin status changes
-    setInterval(loadUserOrders, 15000);
-    loadUserOrders();
 
     // ── User greeting ─────────────────────────────────────────
     const nameEl = document.getElementById('user-name');
