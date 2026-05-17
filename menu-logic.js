@@ -2,7 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let menuData           = [];
     let cart               = [];
     let currentFulfillment = 'delivery';
-    let currentCategory    = 'pork'; // FIX: track active category in a variable, not just DOM state
+    let currentCategory    = 'pork';
+    let savedAddressId     = null;   // address row id from the addresses table
 
     // ── DOM ELEMENTS ──────────────────────────────────────────
     const menuGrid         = document.getElementById('menu-grid');
@@ -33,9 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeOrdersList = document.getElementById('active-orders-list');
 
     // ── 1. FETCH MENU ─────────────────────────────────────────
-    // FIX: Uses database.php action instead of menu.php directly.
-    // Both files are fixed to use the correct DB name (kikays_kusina).
-    // This ensures menu items actually appear on the page.
     async function loadMenu() {
         try {
             const fd = new FormData();
@@ -43,15 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const res  = await fetch('database.php', { method: 'POST', body: fd });
             const data = await res.json();
 
-            if (Array.isArray(data) && data.length > 0) {
-                menuData = data;
-            } else {
-                // Fallback: try the standalone menu.php
-                const res2  = await fetch('menu.php');
-                const data2 = await res2.json();
-                menuData = Array.isArray(data2) ? data2 : [];
-            }
-
+            menuData = Array.isArray(data) && data.length > 0 ? data : [];
             renderMenu(currentCategory);
         } catch (err) {
             console.error("Menu fetch error:", err);
@@ -61,10 +51,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadMenu();
 
-    // ── 2. RENDER MENU ────────────────────────────────────────
-    // FIX: Category switching was broken because the filter compared
-    // item.category directly but categories like "best_seller" had
-    // inconsistent casing in some DB rows. Normalised with trim + toLowerCase.
+    // ── 2. LOAD SAVED ADDRESS from addresses table ────────────
+    async function loadSavedAddress() {
+        try {
+            const fd = new FormData();
+            fd.append('action', 'get_address');
+            const res  = await fetch('database.php', { method: 'POST', body: fd });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                savedAddressId = data.address_id;
+                addressText.textContent = data.full_address;
+                addressDisplay.classList.remove('hidden');
+                addAddressBtn.classList.add('hidden');
+            }
+        } catch (err) {
+            console.error("Address load error:", err);
+        }
+    }
+
+    loadSavedAddress();
+
+    // ── 3. RENDER MENU ────────────────────────────────────────
     function renderMenu(category, searchTerm = '') {
         menuGrid.innerHTML = '';
         noResults.classList.add('hidden');
@@ -73,9 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const cat  = (category  || 'pork').trim().toLowerCase();
 
         const filtered = menuData.filter(item => {
-            const itemCat  = (item.category || '').trim().toLowerCase();
-            const itemName = (item.name      || '').toLowerCase();
-            const itemDesc = (item.description || '').toLowerCase();
+            const itemCat  = (item.category    || '').trim().toLowerCase();
+            const itemName = (item.name         || '').toLowerCase();
+            const itemDesc = (item.description  || '').toLowerCase();
 
             const matchCat    = cat === 'all' || itemCat === cat;
             const matchSearch = !term || itemName.includes(term) || itemDesc.includes(term);
@@ -104,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
-            // FIX: Bind click listener directly — avoids stale closures from inline onclick
             card.querySelector('.add-to-cart-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
                 addToCart(item.id);
@@ -116,10 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         menuGrid.appendChild(frag);
     }
 
-    // ── 3. CATEGORY BUTTONS ───────────────────────────────────
-    // FIX: Was broken because renderMenu was called with the DOM button's
-    // dataset.cat without updating the tracked currentCategory variable first.
-    // Now updates both the variable and active class, then re-renders.
+    // ── 4. CATEGORY BUTTONS ───────────────────────────────────
     categoryBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             categoryBtns.forEach(b => b.classList.remove('active'));
@@ -129,15 +133,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-
-    // ── 4. SEARCH ─────────────────────────────────────────────
+    // ── 5. SEARCH ─────────────────────────────────────────────
     searchInput.addEventListener('input', (e) => {
         renderMenu(currentCategory, e.target.value);
     });
 
-    // ── 5. CART LOGIC ─────────────────────────────────────────
+    // ── 6. CART LOGIC ─────────────────────────────────────────
     function addToCart(id) {
-        // FIX: Use == for comparison because id from DB is string, local may be number
         const item     = menuData.find(i => i.id == id);
         if (!item) return;
         const existing = cart.find(c => c.id == id);
@@ -194,20 +196,39 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!checkoutModal.classList.contains('hidden')) syncCheckoutList();
     }
 
-    // ── 6. ADDRESS ────────────────────────────────────────────
+    // ── 7. ADDRESS ────────────────────────────────────────────
+    // "Add Address" opens modal
     addAddressBtn.addEventListener('click', () => {
         addressInput.value = '';
         addressModal.classList.remove('hidden');
     });
 
-    saveAddressBtn.addEventListener('click', (e) => {
+    // Save address → persist to addresses table, get back address_id
+    saveAddressBtn.addEventListener('click', async (e) => {
         e.preventDefault();
         const val = addressInput.value.trim();
         if (!val) { alert("Please enter a delivery address."); return; }
-        addressText.textContent = val;
-        addressDisplay.classList.remove('hidden');
-        addAddressBtn.classList.add('hidden');
-        addressModal.classList.add('hidden');
+
+        try {
+            const fd = new FormData();
+            fd.append('action',       'save_address');
+            fd.append('full_address', val);
+            const res  = await fetch('database.php', { method: 'POST', body: fd });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                savedAddressId = data.address_id;
+                addressText.textContent = val;
+                addressDisplay.classList.remove('hidden');
+                addAddressBtn.classList.add('hidden');
+                addressModal.classList.add('hidden');
+            } else {
+                alert("Could not save address: " + (data.message || "Unknown error"));
+            }
+        } catch (err) {
+            console.error("Address save error:", err);
+            alert("Network error saving address.");
+        }
     });
 
     editAddressBtn.addEventListener('click', () => {
@@ -216,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     removeAddressBtn.addEventListener('click', () => {
+        savedAddressId          = null;
         addressText.textContent = '';
         addressDisplay.classList.add('hidden');
         addAddressBtn.classList.remove('hidden');
@@ -226,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addressModal.classList.add('hidden');
     });
 
-    // ── 7. CHECKOUT MODAL ─────────────────────────────────────
+    // ── 8. CHECKOUT MODAL ─────────────────────────────────────
     function syncCheckoutList() {
         checkoutItemsList.innerHTML = '';
         cart.forEach(item => {
@@ -270,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsDataURL(file);
     });
 
-    // ── 8. FULFILLMENT TOGGLE ─────────────────────────────────
+    // ── 9. FULFILLMENT TOGGLE ─────────────────────────────────
     window.toggleFulfillment = (method) => {
         currentFulfillment = method;
         const addrSection = document.querySelector('.address-section');
@@ -286,12 +308,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // ── 9. PLACE ORDER ────────────────────────────────────────
+    // ── 10. PLACE ORDER ───────────────────────────────────────
     document.getElementById('place-order-btn').addEventListener('click', async () => {
         const activePayment   = document.querySelector('#gcash-btn.active, #cod-btn.active');
         const fulfillmentTime = document.getElementById('fulfillment-time').value;
         const currentAddress  = addressText.textContent.trim();
-        const emailInput      = document.getElementById('checkout-email').value.trim();
 
         if (!fulfillmentTime) {
             alert("Please select a date and time!"); return;
@@ -302,29 +323,55 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!activePayment) {
             alert("Please select a payment method!"); return;
         }
-        // FIX: Validate GCash proof on the client side before even sending
         if (activePayment.dataset.method === 'gcash' && !proofInput.files[0]) {
             alert("Please upload your GCash proof of payment!"); return;
         }
 
+        // Build items_json: [{menu_id, quantity, line_price}, ...]
+        const itemsJson = JSON.stringify(
+            cart.map(i => ({
+                menu_id:    i.id,
+                quantity:   i.qty,
+                line_price: parseFloat((i.price * i.qty).toFixed(2))
+            }))
+        );
+
+        // Raw total (strip ₱ and commas)
+        const rawTotal = totalEl.textContent.replace('₱', '').replace(/,/g, '');
+
         const fd = new FormData();
         fd.append('action',           'place_order');
-        fd.append('items',            cart.map(i => `${i.qty}x ${i.name}`).join(', '));
-        fd.append('total',            totalEl.textContent.replace('₱', '').replace(/,/g, ''));
+        fd.append('items_json',       itemsJson);
+        fd.append('total',            rawTotal);
         fd.append('method',           activePayment.dataset.method);
         fd.append('fulfillment_type', currentFulfillment);
         fd.append('fulfillment_time', fulfillmentTime);
-        fd.append('address',          currentFulfillment === 'delivery' ? currentAddress : 'Pickup');
-        // FIX: email field was collected in the UI but never sent — now appended
-        fd.append('email',            emailInput);
+
+        // For delivery: send the persisted address_id (or address text as fallback)
+        if (currentFulfillment === 'delivery') {
+            if (savedAddressId) {
+                fd.append('address_id', savedAddressId);
+            } else {
+                // Address was typed but not yet saved — save it first
+                const saveFd = new FormData();
+                saveFd.append('action',       'save_address');
+                saveFd.append('full_address', currentAddress);
+                const saveRes  = await fetch('database.php', { method: 'POST', body: saveFd });
+                const saveData = await saveRes.json();
+                if (saveData.status === 'success') {
+                    savedAddressId = saveData.address_id;
+                    fd.append('address_id', savedAddressId);
+                }
+            }
+        }
 
         if (activePayment.dataset.method === 'gcash') {
             fd.append('proof', proofInput.files[0]);
         }
 
         const placeBtn = document.getElementById('place-order-btn');
-        placeBtn.disabled     = true;
-        placeBtn.textContent  = 'Placing order…';
+        placeBtn.disabled    = true;
+        placeBtn.textContent = 'Placing order…';
 
         try {
             const res  = await fetch('database.php', { method: 'POST', body: fd });
@@ -339,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 uploadLabel.textContent     = 'Click to upload screenshot';
                 document.getElementById('fulfillment-time').value = '';
                 document.getElementById('checkout-email').value   = '';
-                loadUserOrders(); // Refresh order panel immediately
+                loadUserOrders();
                 alert("Order placed successfully! 🎉");
             } else {
                 alert("Error: " + (data.message || "Unknown error"));
@@ -353,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ── 10. ACTIVE ORDERS PANEL ───────────────────────────────
+    // ── 11. ACTIVE ORDERS PANEL ───────────────────────────────
     function statusLabel(s) {
         const map = {
             'Pending':   { cls: 'order-status-pending',   icon: '⏳', text: 'Pending' },
@@ -390,9 +437,10 @@ document.addEventListener('DOMContentLoaded', () => {
             orders.forEach(order => {
                 const sl   = statusLabel(order.status);
                 const card = document.createElement('div');
-                card.className    = 'order-card';
+                card.className       = 'order-card';
                 card.dataset.orderId = order.id;
 
+                // items comes as a GROUP_CONCAT string: "2x Adobo, 1x Lechon"
                 const itemChips = (order.items || '').split(',')
                     .map(i => `<span class="order-item-chip">${escapeHtml(i.trim())}</span>`)
                     .join('');
@@ -400,6 +448,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const receivedBtnHtml = order.status === 'Completed'
                     ? `<button class="order-received-pill-btn" data-id="${order.id}">✓ Order Received</button>`
                     : '';
+
+                // Use total_amount aliased as total in the query
+                const displayTotal = parseFloat(order.total || 0).toFixed(2);
 
                 card.innerHTML = `
                     <div class="order-card-header">
@@ -409,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="order-card-items">${itemChips}</div>
                     <div class="order-card-meta">
                         <span class="order-card-type">${order.fulfillment_type === 'delivery' ? '🛵 Delivery' : '🏪 Pickup'}</span>
-                        <span class="order-card-total">₱${parseFloat(order.total).toFixed(2)}</span>
+                        <span class="order-card-total">₱${displayTotal}</span>
                     </div>
                     ${order.address ? `<div class="order-card-address">📍 ${escapeHtml(order.address)}</div>` : ''}
                     ${order.fulfillment_time ? `<div class="order-card-time">🕐 ${fmtOrderDate(order.fulfillment_time)}</div>` : ''}
@@ -457,22 +508,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Poll every 15 seconds to catch admin status changes live
+    // Poll every 15 seconds to catch admin status changes
     setInterval(loadUserOrders, 15000);
     loadUserOrders();
 
-const nameEl = document.getElementById('user-name');
+    // ── User greeting ─────────────────────────────────────────
+    const nameEl = document.getElementById('user-name');
     if (nameEl) {
         const storedName = sessionStorage.getItem('firstName');
-        // If name exists and isn't a string "null"/"undefined"
-        if (storedName && storedName !== 'undefined' && storedName !== 'null') {
-            nameEl.textContent = storedName;
-        } else {
-            nameEl.textContent = 'Foodie'; 
-        }
+        nameEl.textContent = (storedName && storedName !== 'undefined' && storedName !== 'null')
+            ? storedName
+            : 'Foodie';
     }
 
-    // ── HELPER: Escape HTML to prevent XSS ───────────────────
+    // ── HELPER ────────────────────────────────────────────────
     function escapeHtml(str) {
         if (!str) return '';
         return String(str)

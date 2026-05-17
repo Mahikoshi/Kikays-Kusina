@@ -44,8 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const res  = await fetch('database.php', { method: 'POST', body: fd });
-
-            // FIX: Guard against non-JSON responses (e.g. PHP errors printed as HTML)
             const text = await res.text();
             let json;
             try {
@@ -61,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             allOrders = json;
-            renderTable(allOrders)
+            renderTable(allOrders);
             updateStats(allOrders);
         } catch (err) {
             console.error("Load Error:", err);
@@ -81,13 +79,18 @@ document.addEventListener('DOMContentLoaded', () => {
         orders.forEach(order => {
             const statusClass = (order.status || 'pending').toLowerCase();
 
+            // address comes from addresses.full_address aliased as "address" in the JOIN
             const addressHtml = order.address
                 ? `<div class="td-address">📍 ${escapeHtml(order.address)}</div>`
-                : `<div class="td-address td-muted">No address provided</div>`;
+                : `<div class="td-address td-muted">No address / Pickup</div>`;
 
+            // items comes as GROUP_CONCAT: "2x Lechon Kawali, 1x Halo-Halo"
             const itemChips = (order.items || '—').split(',')
                 .map(i => `<span class="item-chip">${escapeHtml(i.trim())}</span>`)
                 .join('');
+
+            // total is aliased from total_amount in the PHP query
+            const displayTotal = parseFloat(order.total || 0).toFixed(2);
 
             const tr = document.createElement('tr');
             tr.className  = `order-row ${statusClass}`;
@@ -108,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
 
                 <td class="td-total">
-                    <span class="total-amount">₱${parseFloat(order.total || 0).toFixed(2)}</span>
+                    <span class="total-amount">₱${displayTotal}</span>
                     <div>${fmtMethod(order.method)}</div>
                 </td>
 
@@ -128,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
             `;
 
-            // FIX: Bind buttons after insertion — no inline onclick attributes needed
             const doneBtn   = tr.querySelector('.action-btn.done');
             const cancelBtn = tr.querySelector('.action-btn.cancel');
             if (doneBtn)   doneBtn.addEventListener('click',   () => updateStatusInline(tr, order.id, 'Completed'));
@@ -178,14 +180,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 actionsCell.innerHTML = buildActionHtml(newClass, orderId);
 
-                // Update in-memory data so filters remain accurate
                 const idx = allOrders.findIndex(o => o.id == orderId);
                 if (idx > -1) allOrders[idx].status = newStatus;
 
                 updateStats(allOrders);
             } else {
                 alert("Error: " + (data.message || "Unknown error"));
-                // Restore buttons so admin can retry
                 actionsCell.innerHTML = buildActionHtml('pending', orderId);
                 rebindActionButtons(tr, orderId);
             }
@@ -208,12 +208,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── 4. STATS ──────────────────────────────────────────────
     function updateStats(orders) {
-        // FIX: Use case-insensitive comparison so stats always reflect real counts
         const total     = orders.length;
         const pending   = orders.filter(o => (o.status || '').toLowerCase() === 'pending').length;
         const completed = orders.filter(o => (o.status || '').toLowerCase() === 'completed').length;
         const cancelled = orders.filter(o => (o.status || '').toLowerCase() === 'cancelled').length;
-        const revenue   = orders
+
+        // Revenue = sum of total_amount for completed orders (aliased as "total" in the query)
+        const revenue = orders
             .filter(o => (o.status || '').toLowerCase() === 'completed')
             .reduce((s, o) => s + parseFloat(o.total || 0), 0);
 
@@ -246,9 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
     filterStatus.addEventListener('change', applyFilters);
 
     // ── 6. AUTO-REFRESH every 30 s ───────────────────────────
-    // FIX: Admin auto-refresh is fully independent of user sessions —
-    // each PHP session is isolated by cookie so polling here doesn't
-    // affect any logged-in user's session.
     setInterval(loadOrders, 30000);
 
     // ── 7. LOGOUT ─────────────────────────────────────────────

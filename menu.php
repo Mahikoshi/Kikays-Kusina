@@ -1,5 +1,6 @@
 <?php
-// FIX: DB name updated to match setup.sql (removed apostrophe + space)
+// Standalone menu endpoint — kept for backward compatibility.
+// The main app uses database.php?action=get_menu instead.
 header('Content-Type: application/json');
 
 $host     = "localhost";
